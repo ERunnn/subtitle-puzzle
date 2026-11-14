@@ -18,7 +18,7 @@ from subtitle_puzzle.core import (
     CropRect, Padding, LayoutParams, ImageItem, probe_size, project_scale,
     load_preview, compose, save_image, resolve_export_path, resolve_export_paths,
     natural_key, embedded_number, parse_ratio, find_subtitle_band,
-    detect_content_box,
+    detect_content_box, canvas_fill,
 )
 
 LINES = [
@@ -119,6 +119,12 @@ def test_core(paths: list[Path], out: Path):
     r4 = compose(items, rect, LayoutParams(output_mode="ratio", ratio_w=3, ratio_h=4), scale=s)
     check(abs(r4.image.width / r4.image.height - 3 / 4) < 0.01,
           f"指定 3:4 比例输出 {r4.image.size}")
+    check(r4.layout_size[0] == r4.image.width and r4.layout_size[1] < r4.image.height,
+          f"3:4 保留未补边尺寸 {r4.layout_size} → {r4.image.size}")
+    check(abs(canvas_fill((1920, 520), (1920, 2560)) - 0.797) < 0.002 and
+          canvas_fill((100, 100), (100, 100)) == 0.0 and
+          canvas_fill((0, 0), (100, 100)) == 0.0,
+          "补边占比计算与零尺寸边界")
 
     r5 = compose(items, rect, LayoutParams(output_mode="size", output_width=800,
                                            output_height=1200), scale=s)
@@ -468,6 +474,27 @@ def test_gui(paths: list[Path], out: Path):
     check(w.global_rect.valid(), "自动预填字幕区域")
     w.do_render(True)
     check(w.result_view._pix is not None, "实时预览产出图像")
+
+    # 纯比例预设：按钮上只有比例数字，点击即切到「指定比例」并刷新尺寸提示
+    ratio_btns = w.findChildren(_PB, "ratioPreset")
+    check(len(ratio_btns) == 5 and
+          [b.text() for b in ratio_btns] == ["3:4", "9:16", "1:1", "4:3", "16:9"],
+          f"输出尺寸含 5 个纯比例预设 {[b.text() for b in ratio_btns]}")
+    check(not any(k in "".join(b.text() for b in ratio_btns)
+                  for k in ("小红书", "竖屏", "社媒", "朋友圈")),
+          "预设不含任何用途注释")
+    next(b for b in ratio_btns if b.text() == "9:16").click()
+    check(w.cmb_out.currentData() == "ratio" and
+          (w.sp_rw.value(), w.sp_rh.value()) == (9, 16) and
+          w.ed_ratio.text() == "9:16",
+          "点 9:16 预设 → 切到指定比例并回填数值")
+    w.do_render(True)
+    size_text = w.lbl_size.text()
+    check("→" in size_text and "% 补边" in size_text and
+          f"{w._export_size[0]}×{w._export_size[1]}" in size_text,
+          f"预览显示内容→输出尺寸与补边占比：{size_text}")
+    w.cmb_out.setCurrentIndex(0)
+    w.do_render(True)
 
     # 素材区右键菜单：单删 / 上移 / 下移 / 移到最前 / 移到最后
     menu = w._build_item_menu(0)

@@ -270,6 +270,7 @@ class ComposeResult:
     warnings: list[str] = field(default_factory=list)
     error: str = ""
     content_size: tuple[int, int] = (0, 0)
+    layout_size: tuple[int, int] = (0, 0)   # 未补边的内容画布尺寸（预览像素）
 
     @property
     def ok(self) -> bool:
@@ -400,6 +401,15 @@ def _fit_canvas(canvas: Image.Image, params: LayoutParams, g: float) -> Image.Im
         return out
 
     return canvas  # content
+
+
+def canvas_fill(layout_size: tuple[int, int], out_size: tuple[int, int]) -> float:
+    """补边占最终画布的面积比例（0~1）；两个尺寸需处于同一缩放级别。"""
+    lw, lh = layout_size
+    ow, oh = out_size
+    if lw <= 0 or lh <= 0 or ow <= 0 or oh <= 0:
+        return 0.0
+    return max(0.0, min(1.0, 1.0 - (lw * lh) / (ow * oh)))
 
 
 def _frame_strip(source: Image.Image, ratio: float,
@@ -551,6 +561,8 @@ def compose(items: Sequence[ImageItem], global_rect: CropRect,
 
     for grp in groups:
         canvas, size = _layout(grp, params, g)
+        if not result.pages:
+            result.layout_size = size
         result.pages.append(_fit_canvas(canvas, params, g))
     result.image = result.pages[0]
     result.content_size = result.image.size

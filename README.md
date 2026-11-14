@@ -1,13 +1,15 @@
 # 台词匠 · v1.0.0
 
-> 让台词慢一点，让画面停一会。
+> 哪句值得留，你自己定；剩下的交给它。
 
 把视频里一句句台词截下来，自动拼成一张（或一组长图）。适合追剧台词整理、电影语录长图、双语字幕合集。
 
+**看到喜欢的台词，按一次 F8，五分钟内出图** —— 不用找视频文件、不用记时间点、不用等 AI 跑完。
+
+![四句台词拼成的长图：也许不是今天 / 也许不是明天 / 也许不是下个月，但总有一天 / 我会成为冠军](docs/demo/case-01.jpg)
+
 **English** — *SubtitlePuzzle* is a Windows tool that watches a video playing on screen, captures every subtitle line automatically and stitches them into one long image. Python + PySide6, no OCR, no network.
 **你可能在找**：视频台词做成一张长图 · 字幕截图拼接 · 追剧截图工具 · 电影语录长图 · subtitle screenshot stitcher
-
-![工作区：左侧素材、中间框选与预览、右侧参数](docs/screenshots/02-workspace.png)
 
 ## 这是什么
 
@@ -16,6 +18,12 @@
 | **做什么** | 屏幕上播视频 → 自动截下每一句字幕 → 拼成一张（或一组长图） |
 | **平台** | Windows 10/11 桌面程序，有单文件 exe，也有 Python 源码 |
 | **不做什么** | 不解析 SRT/ASS、不做语音识别、不做 OCR（不把字幕转成文字）、不联网 |
+
+## 成品
+
+另一组五句台词拼成的长图，点图片看原图。
+
+<a href="docs/demo/case-02.jpg"><img src="docs/demo/case-02.jpg" alt="五句台词拼成的长图成品"></a>
 
 ## 自动捕获怎么用
 
@@ -30,6 +38,10 @@
 ```
 ① 框选区域 → ② 开始捕获 → ③ 播完按 F8 → ④ 自动去重导入 → ⑤ 导出
 ```
+
+**工作区**（左侧素材、中间框选与预览、右侧参数）
+
+![工作区：左侧素材、中间框选与预览、右侧参数](docs/screenshots/02-workspace.png)
 
 **参数面板**（「高级 → 自动捕获」）
 
@@ -129,7 +141,7 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 
 ## 其它
 
-- **自检**：`python selftest.py`（147 项断言）；打包程序 `台词匠.exe --check`
+- **自检**：`python selftest.py`（153 项断言）；打包程序 `台词匠.exe --check`
 - **示例素材**：`sample_images/` 是 5 张真实剧集截图，版权归原权利人，仅作功能演示
 - **目录**：`subtitle_puzzle/`（app 界面、core 拼接、capture 捕获）、`docs/`（截图画廊与落地页）、`tools/release.py`
 - **已知限制**：仅 Windows；屏幕级捕获怕遮挡；HDR 素材可能偏色；竖排 / 花字字幕建议手动框选
@@ -139,7 +151,7 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 项目：台词匠 SubtitlePuzzle。Windows 桌面工具，Python 3.13 + PySide6；源码 subtitle_puzzle/（app.py 界面 / core.py 拼接导出 / capture.py 捕获），入口 run.py。
 用途：截取屏幕上正在播放的视频字幕，去重去空白后拼成长图导出。不解析 SRT·ASS，不做 OCR·ASR，不联网，不含模型。
 核心算法在 subtitle_puzzle/capture.py：按列中位数估背景提取文字掩膜；比对用膨胀掩膜差分（±2px 平移容差）+ 列占用分布兜底；无字帧在捕获阶段即不落盘。
-实测依据：selftest.py 共 147 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
+实测依据：selftest.py 共 153 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
 阈值实测（仅限仓库内测试用例，非全量语料）：同句在跨背景·模糊·平移场景差异 0.00 至 0.15，不同句 0.22 至 0.31；dedup_threshold 默认 0.08。
 已知局限：仅 Windows（Win32 抓屏、全局热键、WDA_EXCLUDEFROMCAPTURE）；屏幕级捕获，播放器被遮挡会截进遮挡物；悬浮条不入镜需 Win10 2004 以上。
 已知局限：字幕行定位是启发式（core.find_subtitle_band），竖排·花字·重描边需手动框选；亮背景配白字且无描边时可能漏检。

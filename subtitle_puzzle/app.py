@@ -40,6 +40,7 @@ from .core import (
     probe_size, project_scale, load_preview, compose, resolve_export_path,
     resolve_export_paths, save_image, render_filename, natural_key,
     embedded_number, parse_ratio, find_subtitle_band, detect_content_box,
+    canvas_fill,
 )
 from .capture import CaptureConfig, capture_loop, finalize_session
 
@@ -1777,6 +1778,17 @@ class MainWindow(QMainWindow):
         rrow.addWidget(self.ed_ratio); rrow.addWidget(self.sp_rw)
         rrow.addWidget(QLabel(":")); rrow.addWidget(self.sp_rh)
         f2.addRow("比例 W:H", rrow)
+        preset = QHBoxLayout()
+        preset.setSpacing(4)
+        for text in ("3:4", "9:16", "1:1", "4:3", "16:9"):
+            rw, rh = parse_ratio(text)
+            btn = QPushButton(text)
+            btn.setObjectName("ratioPreset")
+            btn.setFixedWidth(52)
+            btn.clicked.connect(lambda *_, a=rw, b=rh: self._on_ratio_preset(a, b))
+            preset.addWidget(btn)
+        preset.addStretch(1)
+        f2.addRow(preset)
         lay.addWidget(g2)
 
         g3 = QGroupBox("导出")
@@ -2450,6 +2462,15 @@ class MainWindow(QMainWindow):
         self._syncing = False
         self._schedule()
 
+    def _on_ratio_preset(self, w: int, h: int):
+        self.cmb_out.setCurrentIndex(max(0, self.cmb_out.findData("ratio")))
+        self._syncing = True
+        self.sp_rw.setValue(w)
+        self.sp_rh.setValue(h)
+        self.ed_ratio.setText(f"{w}:{h}")
+        self._syncing = False
+        self._schedule()
+
     def auto_detect_rect(self):
         """自动定位当前图下半部分的字幕行（借鉴 MIT 项目的行亮度检测思路）。"""
         it = self._current_item()
@@ -2506,12 +2527,19 @@ class MainWindow(QMainWindow):
         if len(res.pages) > 1:
             pix = pil_to_qpixmap(res.pages[idx])
         self.result_view.set_pixmap(pix)
-        if len(res.pages) > 1:
-            self.lbl_size.setText(f"第{idx + 1}/{len(res.pages)}页 · {res.image.width}×{res.image.height}")
-        else:
-            self.lbl_size.setText(f"预览 {res.image.width}×{res.image.height}")
         g = max(1e-6, self.scale)
-        self._export_size = (round(res.image.width / g), round(res.image.height / g))
+        out_size = (round(res.image.width / g), round(res.image.height / g))
+        self._export_size = out_size
+        if self.params.output_mode in ("ratio", "size") and res.layout_size[0]:
+            content_size = (round(res.layout_size[0] / g), round(res.layout_size[1] / g))
+            fill = canvas_fill(res.layout_size, res.image.size)
+            size_text = (f"{content_size[0]}×{content_size[1]} → "
+                         f"{out_size[0]}×{out_size[1]} · {fill * 100:.0f}% 补边")
+        else:
+            size_text = f"预览 {res.image.width}×{res.image.height}"
+        if len(res.pages) > 1:
+            size_text = f"第{idx + 1}/{len(res.pages)}页 · " + size_text
+        self.lbl_size.setText(size_text)
         self._show_warnings(res.warnings)
         self._update_path_preview()
         if force:
