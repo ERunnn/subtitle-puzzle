@@ -1723,7 +1723,7 @@ class MainWindow(QMainWindow):
         f1.addRow("拼接模式", self.cmb_stack)
 
         self.sp_hero = self._spin(5, 100)
-        self.sp_hero.setValue(75)
+        self.sp_hero.setValue(100)
         self.sp_hero.setSuffix(" %")
         self.sp_hero.setToolTip("保留画面时，字幕上方留多少画面：\n"
                                "100% ≈ 整幅原图；75% 留大部分画面；0% 只剩字幕条。\n"
@@ -2733,7 +2733,7 @@ class MainWindow(QMainWindow):
         idx = self.cmb_stack.findData(snap.get("stack_mode", "text"))
         if idx >= 0:
             self.cmb_stack.setCurrentIndex(idx)
-        self.sp_hero.setValue(int(round(float(snap.get("hero_ratio", 0.75)) * 100)))
+        self.sp_hero.setValue(int(round(float(snap.get("hero_ratio", 1.0)) * 100)))
         bg = snap.get("background") or [0, 0, 0]
         self.params.background = tuple(int(v) for v in bg)
         self.chk_transparent.setChecked(bool(snap.get("transparent", False)))

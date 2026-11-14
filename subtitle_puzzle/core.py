@@ -237,7 +237,7 @@ class LayoutParams:
     uniform_width: bool = True          # 统一条带宽度（保持字幕横向对齐）
     uniform_height: bool = False        # 统一条带高度（补背景，不拉伸文字）
     stack_mode: str = "text"            # text | first_full | all_full
-    hero_ratio: float = 0.75            # 保留画面时，字幕上方留多少画面（1=整幅原图）
+    hero_ratio: float = 1.0             # 保留画面时，字幕上方留多少画面（1=整幅原图）
     background: tuple[int, int, int] = (0, 0, 0)
     transparent: bool = False
     output_mode: str = "content"        # content | width | ratio | size
@@ -246,7 +246,7 @@ class LayoutParams:
     ratio_w: int = 3
     ratio_h: int = 4
     orientation: str = "auto"        # landscape | portrait | auto（仅 expand 模式）
-    subtitle_pos: str = "center"     # center | bottom（基础：居中 / 偏下）
+    subtitle_pos: str = "bottom"     # center | bottom（基础：居中 / 偏下）
     subtitle_offset: int = 0         # 高级微调 px，正值更靠下（仅 expand 模式）
     items_per_page: int = 0          # 0 = 拼成一张；>0 = 每页张数，超出分页导出
     resample: str = "LANCZOS"           # NEAREST | BILINEAR | BICUBIC | LANCZOS
@@ -491,8 +491,13 @@ def _expand_strip(source: Image.Image, rect: CropRect, k: float,
     bot = max(top + 1, min(sh, round((rect.y + rect.h) * k)))
     band_h = bot - top
     target_h = max(band_h, int(target_h))
-    ratio = 0.5 if params.subtitle_pos == "center" else 0.72
-    y0 = round((top + bot) / 2 - ratio * target_h) - params.subtitle_offset
+    if params.subtitle_pos == "center":
+        # 居中：按字幕中心反推窗口，超出原片底边的部分由背景补齐
+        y0 = round((top + bot) / 2 - 0.5 * target_h) - params.subtitle_offset
+    else:
+        # 偏下（默认）：窗口下沿贴住原片底边，缺的高度全部从上方多取真实画面，
+        # 不产生任何背景黑边。
+        y0 = sh - target_h - params.subtitle_offset
     y1 = y0 + target_h
     c0, c1 = max(0, y0), min(sh, y1)
     layer = Image.new("RGBA", (sw, target_h), bg)

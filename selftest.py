@@ -513,8 +513,9 @@ def test_gui(paths: list[Path], out: Path):
           == ["auto", "landscape", "portrait"] and w.cmb_orient.currentData() == "auto",
           "方向选项：自动 / 横屏 / 竖屏，默认自动")
     check([w.cmb_subpos.itemData(i) for i in range(w.cmb_subpos.count())]
-          == ["center", "bottom"] and w.cmb_subpos.currentData() == "center",
-          "基础「字幕位置」只有居中 / 偏下两项，默认居中")
+          == ["center", "bottom"] and w.cmb_subpos.currentData() == "bottom",
+          "基础「字幕位置」只有居中 / 偏下两项，默认偏下（零背景）")
+    check(w.sp_hero.value() == 100, "首图保留画面默认 100% 整幅画面")
     check(w.sp_suboff.minimum() < 0 < w.sp_suboff.maximum(),
           "高级「字幕微调」可正负调节")
     next(b for b in ratio_btns if b.text() == "9:16").click()
