@@ -126,6 +126,21 @@ def test_core(paths: list[Path], out: Path):
           canvas_fill((0, 0), (100, 100)) == 0.0,
           "补边占比计算与零尺寸边界")
 
+    r_exp = compose(items, rect, LayoutParams(output_mode="expand", ratio_w=3, ratio_h=4),
+                    scale=s)
+    check(r_exp.ok and abs(r_exp.image.width / r_exp.image.height - 3 / 4) < 0.02,
+          f"扩展取景按比例输出 {r_exp.image.size}")
+    check(r_exp.ok and canvas_fill(r_exp.layout_size, r_exp.image.size) < 0.001,
+          "扩展取景零补边（画面来自原图，不是黑边）")
+    r_auto = compose(items, rect, LayoutParams(output_mode="expand", ratio_w=4, ratio_h=3),
+                     scale=s)
+    check(r_auto.used_ratio == (3, 4) and "竖屏" in r_auto.ratio_note,
+          f"横屏放不下自动转竖屏 {r_auto.used_ratio} {r_auto.ratio_note}")
+    r_force = compose(items, rect, LayoutParams(output_mode="expand", ratio_w=4, ratio_h=3,
+                                               orientation="landscape"), scale=s)
+    check(r_force.ok and "自适应" in r_force.ratio_note,
+          "强制横屏且放不下时退回按内容自适应")
+
     r5 = compose(items, rect, LayoutParams(output_mode="size", output_width=800,
                                            output_height=1200), scale=s)
     check(r5.image.size == (800, 1200), f"指定 800×1200 输出 {r5.image.size}")
@@ -483,16 +498,21 @@ def test_gui(paths: list[Path], out: Path):
     check(not any(k in "".join(b.text() for b in ratio_btns)
                   for k in ("小红书", "竖屏", "社媒", "朋友圈")),
           "预设不含任何用途注释")
+    check([w.cmb_orient.itemData(i) for i in range(w.cmb_orient.count())]
+          == ["auto", "landscape", "portrait"] and w.cmb_orient.currentData() == "auto",
+          "方向选项：自动 / 横屏 / 竖屏，默认自动")
     next(b for b in ratio_btns if b.text() == "9:16").click()
-    check(w.cmb_out.currentData() == "ratio" and
+    check(w.cmb_out.currentData() == "expand" and
           (w.sp_rw.value(), w.sp_rh.value()) == (9, 16) and
           w.ed_ratio.text() == "9:16",
-          "点 9:16 预设 → 切到指定比例并回填数值")
+          "点 9:16 预设 → 切到指定比例（扩展取景）并回填数值")
+    check(w.cmb_orient.isEnabled(), "扩展取景模式下方向选项可用")
     w.do_render(True)
     size_text = w.lbl_size.text()
-    check("→" in size_text and "% 补边" in size_text and
-          f"{w._export_size[0]}×{w._export_size[1]}" in size_text,
-          f"预览显示内容→输出尺寸与补边占比：{size_text}")
+    check("9:16" in size_text and "% 补边" in size_text,
+          f"预览显示实际比例与补边占比：{size_text}")
+    w.cmb_out.setCurrentIndex(w.cmb_out.findData("ratio"))
+    check(not w.cmb_orient.isEnabled(), "补画布模式下方向选项置灰")
     w.cmb_out.setCurrentIndex(0)
     w.do_render(True)
 

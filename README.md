@@ -60,23 +60,27 @@
 - **没字幕的帧不用管**：字幕消失（黑场 / 转场 / 空镜）就不存盘，停止后还会再筛一遍
 - **热键被占用也能停**：区域行显示「被占用」时，点悬浮条即可
 
-## 三种拼接模式
+## 输出比例
 
-同一批 5 张截图、同一个框选（1920×104）。三张都用「指定比例 3:4」重新导出，用来展示输出比例功能：内容原样保留，只补背景，不裁画面、不拉伸文字。点图片看原图。
+同一批 5 张截图、同一个框选（1920×104）。三张分别按 4:3 / 1:1 / 3:4 导出：**以字幕框为中心向原图多取画面**，把画布撑成目标比例，而不是补黑边 —— 三张补边都是 0%，字幕一条不少。点图片看原图。
 
 <table>
 <tr>
-<td width="33%" align="center" valign="top"><strong>① 纯台词</strong><br><sub>1920×520 → 1920×2560 · 80% 补边</sub><br><a href="docs/demo/mode-text-3x4.jpg"><img src="docs/demo/mode-text-3x4.jpg" width="280" alt="纯台词模式 3:4 成品"></a></td>
-<td width="33%" align="center" valign="top"><strong>② 首图保留画面（默认）</strong><br><sub>1920×1231 → 1920×2560 · 52% 补边</sub><br><a href="docs/demo/mode-first-3x4.jpg"><img src="docs/demo/mode-first-3x4.jpg" width="280" alt="首图保留画面模式 3:4 成品"></a></td>
-<td width="33%" align="center" valign="top"><strong>③ 每张都保留画面</strong><br><sub>1920×4075 → 3056×4075 · 37% 补边</sub><br><a href="docs/demo/mode-all-3x4.jpg"><img src="docs/demo/mode-all-3x4.jpg" width="280" alt="每张都保留画面模式 3:4 成品"></a></td>
+<td width="33%" align="center" valign="top"><strong>4:3 · 横屏</strong><br><sub>1920×1440 · 每句取景 288px</sub><br><a href="docs/demo/ratio-4x3.jpg"><img src="docs/demo/ratio-4x3.jpg" width="280" alt="4:3 横屏成品"></a></td>
+<td width="33%" align="center" valign="top"><strong>1:1 · 方图</strong><br><sub>1920×1920 · 每句取景 384px</sub><br><a href="docs/demo/ratio-1x1.jpg"><img src="docs/demo/ratio-1x1.jpg" width="280" alt="1:1 方图成品"></a></td>
+<td width="33%" align="center" valign="top"><strong>3:4 · 竖屏</strong><br><sub>1920×2560 · 每句取景 512px</sub><br><a href="docs/demo/ratio-3x4.jpg"><img src="docs/demo/ratio-3x4.jpg" width="280" alt="3:4 竖屏成品"></a></td>
 </tr>
 </table>
 
-### 输出比例
+### 怎么用
 
-「输出尺寸 → 输出方式 → 指定比例（补画布）」下有一行纯比例预设：`3:4` `9:16` `1:1` `4:3` `16:9`，点一下即切换；旁边的比例框也能手填，输出方式还有「按内容自适应 / 指定宽度 / 指定 W × H」。
+「输出尺寸 → 输出方式 → 指定比例（扩展取景）」，下面一行纯比例预设 `3:4` `9:16` `1:1` `4:3` `16:9`，点一下即切换，比例框也能手填。旁边新增**方向**：自动 / 横屏 / 竖屏 —— 选横屏会把 `3:4` 当 `4:3` 用，选竖屏反过来，所有比例都一样。
 
-选中比例后，预览区实时显示「内容尺寸 → 输出尺寸 · 补边占比」。补边不是坏事，但占比太高就说明这个比例跟当前内容不匹配 —— 上面 ① 的 80% 正是在提示：纯台词只有 5 句时套 3:4 会留出大片空白，可以换成 `1:1`、多截几句，或改用「首图保留画面」。工具只把数字摆出来，怎么选还是你定。
+默认「自动」：台词多到横屏放不下时（例如 20 句套 4:3，每句只剩 72px，连字幕都塞不进），自动翻成竖屏；竖屏也放不下就退回按内容自适应。强制横屏时不自动翻，直接按内容出图。
+
+预览区实时显示「N 句 · 实际比例 · 补边占比」。字幕通常在画面底部：这批素材向上还有 948px、向下只有 28px，所以扩展主要取字幕上方的画面；触到原图边界会把余量补给另一侧，字幕始终完整。
+
+想少带画面时，另选「指定比例（补画布）」：内容原样居中、四周补背景，并在预览里显示补边占比，方便判断这个比例合不合算。三种拼接模式（纯台词 / 首图保留画面 / 每张都保留画面）仍按原来的方式工作。
 
 ## 功能一览
 
@@ -145,7 +149,7 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 
 ## 其它
 
-- **自检**：`python selftest.py`（153 项断言）；打包程序 `台词匠.exe --check`
+- **自检**：`python selftest.py`（160 项断言）；打包程序 `台词匠.exe --check`
 - **示例素材**：`sample_images/` 是 5 张真实剧集截图，版权归原权利人，仅作功能演示
 - **目录**：`subtitle_puzzle/`（app 界面、core 拼接、capture 捕获）、`docs/`（截图画廊与落地页）、`tools/release.py`
 - **已知限制**：仅 Windows；屏幕级捕获怕遮挡；HDR 素材可能偏色；竖排 / 花字字幕建议手动框选
@@ -155,7 +159,7 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 项目：台词匠 SubtitlePuzzle。Windows 桌面工具，Python 3.13 + PySide6；源码 subtitle_puzzle/（app.py 界面 / core.py 拼接导出 / capture.py 捕获），入口 run.py。
 用途：截取屏幕上正在播放的视频字幕，去重去空白后拼成长图导出。不解析 SRT·ASS，不做 OCR·ASR，不联网，不含模型。
 核心算法在 subtitle_puzzle/capture.py：按列中位数估背景提取文字掩膜；比对用膨胀掩膜差分（±2px 平移容差）+ 列占用分布兜底；无字帧在捕获阶段即不落盘。
-实测依据：selftest.py 共 153 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
+实测依据：selftest.py 共 160 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
 阈值实测（仅限仓库内测试用例，非全量语料）：同句在跨背景·模糊·平移场景差异 0.00 至 0.15，不同句 0.22 至 0.31；dedup_threshold 默认 0.08。
 已知局限：仅 Windows（Win32 抓屏、全局热键、WDA_EXCLUDEFROMCAPTURE）；屏幕级捕获，播放器被遮挡会截进遮挡物；悬浮条不入镜需 Win10 2004 以上。
 已知局限：字幕行定位是启发式（core.find_subtitle_band），竖排·花字·重描边需手动框选；亮背景配白字且无描边时可能漏检。

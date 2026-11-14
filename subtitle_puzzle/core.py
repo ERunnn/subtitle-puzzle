@@ -245,6 +245,7 @@ class LayoutParams:
     output_height: int = 1920
     ratio_w: int = 3
     ratio_h: int = 4
+    orientation: str = "auto"        # landscape | portrait | auto（仅 expand 模式）
     items_per_page: int = 0          # 0 = 拼成一张；>0 = 每页张数，超出分页导出
     resample: str = "LANCZOS"           # NEAREST | BILINEAR | BICUBIC | LANCZOS
 
@@ -271,6 +272,8 @@ class ComposeResult:
     error: str = ""
     content_size: tuple[int, int] = (0, 0)
     layout_size: tuple[int, int] = (0, 0)   # 未补边的内容画布尺寸（预览像素）
+    ratio_note: str = ""                     # 扩展取景时的方向决策说明
+    used_ratio: tuple[int, int] = (0, 0)
 
     @property
     def ok(self) -> bool:
@@ -372,6 +375,9 @@ def _fit_canvas(canvas: Image.Image, params: LayoutParams, g: float) -> Image.Im
     res = _resample(params.resample)
     w, h = canvas.size
 
+    if mode == "expand":
+        return canvas
+
     if mode == "width":
         tw = max(1, round(params.output_width * g))
         th = max(1, round(h * tw / w))
@@ -429,6 +435,73 @@ def _frame_strip(source: Image.Image, ratio: float,
         return source.crop((0, y0, sw, bot)).convert("RGBA")
     crop_h = max(1, round(sh * r))
     return source.crop((0, 0, sw, crop_h)).convert("RGBA")
+
+
+def _oriented_ratio(params: LayoutParams) -> tuple[int, int]:
+    """按横屏 / 竖屏选项返回 (宽比, 高比)。"""
+    rw, rh = max(1, params.ratio_w), max(1, params.ratio_h)
+    if params.orientation == "portrait" and rw > rh:
+        return rh, rw
+    if params.orientation == "landscape" and rh > rw:
+        return rh, rw
+    return rw, rh
+
+
+def _expand_plan(source_w: int, n: int, band_h: float,
+                 params: LayoutParams, g: float) -> tuple[int, tuple[int, int], str]:
+    """反推每条条带的目标高度：从原图多取画面，而不是补黑边。
+
+    返回 (目标高, 实际比例, 说明)。目标高为 0 表示当前比例连字幕都放不下，
+    应退回按内容自适应。
+    """
+    rw, rh = _oriented_ratio(params)
+
+    def fits(r: tuple[int, int]) -> bool:
+        total = source_w * r[1] / r[0]
+        usable = total - round(params.gap * g) * (n - 1) - round(params.margin * g) * 2
+        return usable / n >= band_h
+
+    if not fits((rw, rh)):
+        flipped = (rh, rw)
+        if params.orientation == "auto" and fits(flipped):
+            rw, rh = flipped
+            note = "台词较多，已自动改为竖屏"
+        else:
+            return 0, (rw, rh), "当前比例放不下，已按内容自适应"
+    else:
+        note = ""
+    total = source_w * rh / rw
+    usable = total - round(params.gap * g) * (n - 1) - round(params.margin * g) * 2
+    return max(1, round(usable / n)), (rw, rh), note
+
+
+def _expand_strip(source: Image.Image, rect: CropRect, k: float,
+                  target_h: int, bg: tuple[int, int, int, int]) -> Image.Image:
+    """以字幕框为中心向外扩展，从原图多取画面凑到 target_h。
+
+    触到原图上下边界时把余量补给另一侧；字幕始终完整。
+    原图本身不够高时不足部分补背景，不缩放、不拉伸文字。
+    """
+    sw, sh = source.size
+    top = max(0, min(sh - 1, round(rect.y * k)))
+    bot = max(top + 1, min(sh, round((rect.y + rect.h) * k)))
+    band_h = bot - top
+    target_h = max(band_h, int(target_h))
+    y0 = top - (target_h - band_h) // 2
+    y1 = y0 + target_h
+    if y0 < 0:
+        y1 -= y0
+        y0 = 0
+    if y1 > sh:
+        y0 -= (y1 - sh)
+        y1 = sh
+    y0, y1 = max(0, y0), min(sh, y1)
+    strip = source.crop((0, y0, sw, y1)).convert("RGBA")
+    if strip.height < target_h:
+        layer = Image.new("RGBA", (sw, target_h), bg)
+        layer.alpha_composite(strip, (0, (target_h - strip.height) // 2))
+        return layer
+    return strip
 
 
 def _layout(strips: list[Image.Image], params: LayoutParams,
@@ -502,6 +575,8 @@ def compose(items: Sequence[ImageItem], global_rect: CropRect,
 
     strips: list[Image.Image] = []
     mode = params.stack_mode
+    expand_mode = params.output_mode == "expand"
+    target_h: int | None = None
     for i, (it, rect) in enumerate(zip(usable, rects)):
         label = f"第 {i + 1} 张 {it.name}"
         try:
@@ -514,6 +589,19 @@ def compose(items: Sequence[ImageItem], global_rect: CropRect,
                     result.warnings.append(f"{label}：预览图缺失，已跳过")
                     continue
                 k = source.width / max(1, it.full_size[0])
+            if expand_mode:
+                if target_h is None:
+                    target_h, used, note = _expand_plan(
+                        source.width, len(usable), rect.h * k, params, g)
+                    result.used_ratio, result.ratio_note = used, note
+                if target_h > 0:
+                    strips.append(_expand_strip(source, rect, k, target_h, bg))
+                else:
+                    fallback = _crop_strip(it, rect, params, source, k,
+                                           label, result.warnings)
+                    if fallback is not None:
+                        strips.append(fallback)
+                continue
             keep_frame = (mode == "all_full") or (mode == "first_full" and i == 0)
             if keep_frame:
                 strip = _frame_strip(source, params.hero_ratio, rect, k)

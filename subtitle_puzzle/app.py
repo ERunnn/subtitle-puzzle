@@ -1761,7 +1761,9 @@ class MainWindow(QMainWindow):
         f2 = QFormLayout(g2)
         self.cmb_out = NoWheelComboBox()
         for label, key in (("按内容自适应", "content"), ("指定宽度（高度等比）", "width"),
-                           ("指定比例（补画布）", "ratio"), ("指定 W × H（居中适配）", "size")):
+                           ("指定比例（扩展取景）", "expand"),
+                           ("指定比例（补画布）", "ratio"),
+                           ("指定 W × H（居中适配）", "size")):
             self.cmb_out.addItem(label, key)
         self.cmb_out.currentIndexChanged.connect(self._sync_output_enabled)
         f2.addRow("输出方式", self.cmb_out)
@@ -1778,6 +1780,12 @@ class MainWindow(QMainWindow):
         rrow.addWidget(self.ed_ratio); rrow.addWidget(self.sp_rw)
         rrow.addWidget(QLabel(":")); rrow.addWidget(self.sp_rh)
         f2.addRow("比例 W:H", rrow)
+        self.cmb_orient = NoWheelComboBox()
+        for label, key in (("自动", "auto"), ("横屏", "landscape"), ("竖屏", "portrait")):
+            self.cmb_orient.addItem(label, key)
+        self.cmb_orient.setToolTip("自动：台词多到横屏放不下时，自动改为竖屏")
+        self.cmb_orient.currentIndexChanged.connect(self._on_param_changed)
+        f2.addRow("方向", self.cmb_orient)
         preset = QHBoxLayout()
         preset.setSpacing(4)
         for text in ("3:4", "9:16", "1:1", "4:3", "16:9"):
@@ -1981,6 +1989,7 @@ class MainWindow(QMainWindow):
         self.sp_rw.setValue(p.ratio_w)
         self.sp_rh.setValue(p.ratio_h)
         self.ed_ratio.setText(f"{p.ratio_w}:{p.ratio_h}")
+        self.cmb_orient.setCurrentIndex(max(0, self.cmb_orient.findData(p.orientation)))
         self._update_swatch()
         self._syncing = False
 
@@ -2002,6 +2011,7 @@ class MainWindow(QMainWindow):
         p.output_height = self.sp_oh.value()
         p.ratio_w = self.sp_rw.value()
         p.ratio_h = self.sp_rh.value()
+        p.orientation = self.cmb_orient.currentData() or "auto"
         p.items_per_page = self.sp_per_page.value()
         p.resample = self.cmb_resample.currentData()
 
@@ -2009,8 +2019,10 @@ class MainWindow(QMainWindow):
         mode = self.cmb_out.currentData()
         self.sp_ow.setEnabled(mode in ("width", "size"))
         self.sp_oh.setEnabled(mode == "size")
-        self.sp_rw.setEnabled(mode == "ratio")
-        self.sp_rh.setEnabled(mode == "ratio")
+        self.sp_rw.setEnabled(mode in ("ratio", "expand"))
+        self.sp_rh.setEnabled(mode in ("ratio", "expand"))
+        if hasattr(self, "cmb_orient"):
+            self.cmb_orient.setEnabled(mode == "expand")
         self._schedule()
 
     def _update_swatch(self):
@@ -2463,7 +2475,7 @@ class MainWindow(QMainWindow):
         self._schedule()
 
     def _on_ratio_preset(self, w: int, h: int):
-        self.cmb_out.setCurrentIndex(max(0, self.cmb_out.findData("ratio")))
+        self.cmb_out.setCurrentIndex(max(0, self.cmb_out.findData("expand")))
         self._syncing = True
         self.sp_rw.setValue(w)
         self.sp_rh.setValue(h)
@@ -2530,7 +2542,13 @@ class MainWindow(QMainWindow):
         g = max(1e-6, self.scale)
         out_size = (round(res.image.width / g), round(res.image.height / g))
         self._export_size = out_size
-        if self.params.output_mode in ("ratio", "size") and res.layout_size[0]:
+        if self.params.output_mode == "expand":
+            rw, rh = res.used_ratio or (self.params.ratio_w, self.params.ratio_h)
+            size_text = (f"{len(self.items)} 句 · {rw}:{rh} · "
+                         f"{canvas_fill(res.layout_size, res.image.size) * 100:.0f}% 补边")
+            if res.ratio_note:
+                size_text += f" · {res.ratio_note}"
+        elif self.params.output_mode in ("ratio", "size") and res.layout_size[0]:
             content_size = (round(res.layout_size[0] / g), round(res.layout_size[1] / g))
             fill = canvas_fill(res.layout_size, res.image.size)
             size_text = (f"{content_size[0]}×{content_size[1]} → "
@@ -2674,6 +2692,7 @@ class MainWindow(QMainWindow):
             "transparent": p.transparent, "output_mode": p.output_mode,
             "output_width": p.output_width, "output_height": p.output_height,
             "ratio_w": p.ratio_w, "ratio_h": p.ratio_h,
+            "orientation": p.orientation,
             "items_per_page": p.items_per_page, "resample": p.resample,
             "padding": [p.padding.top, p.padding.bottom, p.padding.left, p.padding.right],
             "dir": self.ed_dir.text(), "name": self.ed_name.text(),
@@ -2708,6 +2727,9 @@ class MainWindow(QMainWindow):
         self.sp_oh.setValue(int(snap.get("output_height", 1920)))
         self.sp_rw.setValue(int(snap.get("ratio_w", 3)))
         self.sp_rh.setValue(int(snap.get("ratio_h", 4)))
+        idx = self.cmb_orient.findData(snap.get("orientation", "auto"))
+        if idx >= 0:
+            self.cmb_orient.setCurrentIndex(idx)
         self.sp_per_page.setValue(int(snap.get("items_per_page", 0)))
         idx = self.cmb_resample.findData(snap.get("resample", "LANCZOS"))
         if idx >= 0:
