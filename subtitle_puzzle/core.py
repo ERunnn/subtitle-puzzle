@@ -246,6 +246,8 @@ class LayoutParams:
     ratio_w: int = 3
     ratio_h: int = 4
     orientation: str = "auto"        # landscape | portrait | auto（仅 expand 模式）
+    subtitle_pos: str = "center"     # center | bottom（基础：居中 / 偏下）
+    subtitle_offset: int = 0         # 高级微调 px，正值更靠下（仅 expand 模式）
     items_per_page: int = 0          # 0 = 拼成一张；>0 = 每页张数，超出分页导出
     resample: str = "LANCZOS"           # NEAREST | BILINEAR | BICUBIC | LANCZOS
 
@@ -476,32 +478,28 @@ def _expand_plan(source_w: int, n: int, band_h: float,
 
 
 def _expand_strip(source: Image.Image, rect: CropRect, k: float,
-                  target_h: int, bg: tuple[int, int, int, int]) -> Image.Image:
-    """以字幕框为中心向外扩展，从原图多取画面凑到 target_h。
+                  target_h: int, bg: tuple[int, int, int, int],
+                  params: LayoutParams) -> Image.Image:
+    """从原图多取画面凑到 target_h，并按参数把字幕放在条带里的指定位置。
 
-    触到原图上下边界时把余量补给另一侧；字幕始终完整。
-    原图本身不够高时不足部分补背景，不缩放、不拉伸文字。
+    取景严格不超过原片上下边界；超出部分补背景，不缩放、不拉伸文字。
+    subtitle_pos="center" 让字幕居中，"bottom" 让它贴近下沿；
+    subtitle_offset 在此基础上做像素级微调（正值更靠下）。
     """
     sw, sh = source.size
     top = max(0, min(sh - 1, round(rect.y * k)))
     bot = max(top + 1, min(sh, round((rect.y + rect.h) * k)))
     band_h = bot - top
     target_h = max(band_h, int(target_h))
-    y0 = top - (target_h - band_h) // 2
+    ratio = 0.5 if params.subtitle_pos == "center" else 0.72
+    y0 = round((top + bot) / 2 - ratio * target_h) - params.subtitle_offset
     y1 = y0 + target_h
-    if y0 < 0:
-        y1 -= y0
-        y0 = 0
-    if y1 > sh:
-        y0 -= (y1 - sh)
-        y1 = sh
-    y0, y1 = max(0, y0), min(sh, y1)
-    strip = source.crop((0, y0, sw, y1)).convert("RGBA")
-    if strip.height < target_h:
-        layer = Image.new("RGBA", (sw, target_h), bg)
-        layer.alpha_composite(strip, (0, (target_h - strip.height) // 2))
-        return layer
-    return strip
+    c0, c1 = max(0, y0), min(sh, y1)
+    layer = Image.new("RGBA", (sw, target_h), bg)
+    if c1 > c0:
+        strip = source.crop((0, c0, sw, c1)).convert("RGBA")
+        layer.alpha_composite(strip, (0, c0 - y0))
+    return layer
 
 
 def _layout(strips: list[Image.Image], params: LayoutParams,
@@ -595,7 +593,7 @@ def compose(items: Sequence[ImageItem], global_rect: CropRect,
                         source.width, len(usable), rect.h * k, params, g)
                     result.used_ratio, result.ratio_note = used, note
                 if target_h > 0:
-                    strips.append(_expand_strip(source, rect, k, target_h, bg))
+                    strips.append(_expand_strip(source, rect, k, target_h, bg, params))
                 else:
                     fallback = _crop_strip(it, rect, params, source, k,
                                            label, result.warnings)

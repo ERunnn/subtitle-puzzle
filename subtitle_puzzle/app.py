@@ -1786,6 +1786,12 @@ class MainWindow(QMainWindow):
         self.cmb_orient.setToolTip("自动：台词多到横屏放不下时，自动改为竖屏")
         self.cmb_orient.currentIndexChanged.connect(self._on_param_changed)
         f2.addRow("方向", self.cmb_orient)
+        self.cmb_subpos = NoWheelComboBox()
+        for label, key in (("居中", "center"), ("偏下", "bottom")):
+            self.cmb_subpos.addItem(label, key)
+        self.cmb_subpos.setToolTip("扩展取景时，字幕在每一小块里的垂直位置")
+        self.cmb_subpos.currentIndexChanged.connect(self._on_param_changed)
+        f2.addRow("字幕位置", self.cmb_subpos)
         preset = QHBoxLayout()
         preset.setSpacing(4)
         for text in ("3:4", "9:16", "1:1", "4:3", "16:9"):
@@ -1889,6 +1895,12 @@ class MainWindow(QMainWindow):
         f2.addRow(self.chk_uw); f2.addRow(self.chk_uh)
         self.chk_transparent = QCheckBox("透明背景（仅 PNG / WebP 有效）")
         f2.addRow(self.chk_transparent)
+        self.sp_suboff = self._spin(-150, 150)
+        self.sp_suboff.setSuffix(" px")
+        f2.addRow("字幕微调", self.sp_suboff)
+        off_hint = QLabel("正值更靠下；在「字幕位置」基础上微调（仅扩展取景）")
+        off_hint.setWordWrap(True)
+        f2.addRow("", off_hint)
         lay.addWidget(g2)
 
         g3 = QGroupBox("输出细节")
@@ -1990,6 +2002,8 @@ class MainWindow(QMainWindow):
         self.sp_rh.setValue(p.ratio_h)
         self.ed_ratio.setText(f"{p.ratio_w}:{p.ratio_h}")
         self.cmb_orient.setCurrentIndex(max(0, self.cmb_orient.findData(p.orientation)))
+        self.cmb_subpos.setCurrentIndex(max(0, self.cmb_subpos.findData(p.subtitle_pos)))
+        self.sp_suboff.setValue(p.subtitle_offset)
         self._update_swatch()
         self._syncing = False
 
@@ -2012,6 +2026,8 @@ class MainWindow(QMainWindow):
         p.ratio_w = self.sp_rw.value()
         p.ratio_h = self.sp_rh.value()
         p.orientation = self.cmb_orient.currentData() or "auto"
+        p.subtitle_pos = self.cmb_subpos.currentData() or "center"
+        p.subtitle_offset = self.sp_suboff.value()
         p.items_per_page = self.sp_per_page.value()
         p.resample = self.cmb_resample.currentData()
 
@@ -2693,6 +2709,7 @@ class MainWindow(QMainWindow):
             "output_width": p.output_width, "output_height": p.output_height,
             "ratio_w": p.ratio_w, "ratio_h": p.ratio_h,
             "orientation": p.orientation,
+            "subtitle_pos": p.subtitle_pos, "subtitle_offset": p.subtitle_offset,
             "items_per_page": p.items_per_page, "resample": p.resample,
             "padding": [p.padding.top, p.padding.bottom, p.padding.left, p.padding.right],
             "dir": self.ed_dir.text(), "name": self.ed_name.text(),
@@ -2730,6 +2747,10 @@ class MainWindow(QMainWindow):
         idx = self.cmb_orient.findData(snap.get("orientation", "auto"))
         if idx >= 0:
             self.cmb_orient.setCurrentIndex(idx)
+        idx = self.cmb_subpos.findData(snap.get("subtitle_pos", "center"))
+        if idx >= 0:
+            self.cmb_subpos.setCurrentIndex(idx)
+        self.sp_suboff.setValue(int(snap.get("subtitle_offset", 0)))
         self.sp_per_page.setValue(int(snap.get("items_per_page", 0)))
         idx = self.cmb_resample.findData(snap.get("resample", "LANCZOS"))
         if idx >= 0:

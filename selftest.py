@@ -140,6 +140,17 @@ def test_core(paths: list[Path], out: Path):
                                                orientation="landscape"), scale=s)
     check(r_force.ok and "自适应" in r_force.ratio_note,
           "强制横屏且放不下时退回按内容自适应")
+    from PIL import ImageChops
+    base = dict(output_mode="expand", ratio_w=4, ratio_h=3)
+    r_center = compose(items, rect, LayoutParams(subtitle_pos="center", **base), scale=s)
+    r_bottom = compose(items, rect, LayoutParams(subtitle_pos="bottom", **base), scale=s)
+    check(ImageChops.difference(r_center.image.convert("RGB"),
+                                r_bottom.image.convert("RGB")).getbbox() is not None,
+          "基础「居中 / 偏下」产出不同画面")
+    r_off = compose(items, rect, LayoutParams(subtitle_offset=40, **base), scale=s)
+    check(ImageChops.difference(r_center.image.convert("RGB"),
+                                r_off.image.convert("RGB")).getbbox() is not None,
+          "高级像素微调能改变字幕位置")
 
     r5 = compose(items, rect, LayoutParams(output_mode="size", output_width=800,
                                            output_height=1200), scale=s)
@@ -501,6 +512,11 @@ def test_gui(paths: list[Path], out: Path):
     check([w.cmb_orient.itemData(i) for i in range(w.cmb_orient.count())]
           == ["auto", "landscape", "portrait"] and w.cmb_orient.currentData() == "auto",
           "方向选项：自动 / 横屏 / 竖屏，默认自动")
+    check([w.cmb_subpos.itemData(i) for i in range(w.cmb_subpos.count())]
+          == ["center", "bottom"] and w.cmb_subpos.currentData() == "center",
+          "基础「字幕位置」只有居中 / 偏下两项，默认居中")
+    check(w.sp_suboff.minimum() < 0 < w.sp_suboff.maximum(),
+          "高级「字幕微调」可正负调节")
     next(b for b in ratio_btns if b.text() == "9:16").click()
     check(w.cmb_out.currentData() == "expand" and
           (w.sp_rw.value(), w.sp_rh.value()) == (9, 16) and
