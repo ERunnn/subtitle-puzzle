@@ -27,6 +27,7 @@
 - 章节标题「功能」改为「功能介绍」，目录锚点同步
 - 横竖屏两格改为同尺寸卡片(420×445) + 同 width(360) + 等宽列(50%)，消除 GitHub max-width 缩放导致的高度差
 - 目录改为 HTML 列表，「功能介绍」用 `<details open>` 做成可折叠，点一下收起两个子节
+- GitHub 账号由 `ERun-3` 改名为 `ERunnn`：16 处链接（README / 落地页 / llms.txt / release.py）、Pages 域名、git remote 与提交邮箱同步
 - 软件内 FAQ 同步 100% 画面保留与五种输出方式，新增扩展取景问答
 - 自检 172 项全过；exe 重打包并冒烟自检
 

@@ -43,7 +43,7 @@ screen capture, screenshot stitching, PySide6, Windows desktop app, no OCR
 
 ## 链接
 
-- 仓库：https://github.com/ERun-3/subtitle-puzzle
-- 最新版本：https://github.com/ERun-3/subtitle-puzzle/releases/latest
-- 更新记录：https://github.com/ERun-3/subtitle-puzzle/blob/main/CHANGELOG.md
+- 仓库：https://github.com/ERunnn/subtitle-puzzle
+- 最新版本：https://github.com/ERunnn/subtitle-puzzle/releases/latest
+- 更新记录：https://github.com/ERunnn/subtitle-puzzle/blob/main/CHANGELOG.md
 - 许可：MIT

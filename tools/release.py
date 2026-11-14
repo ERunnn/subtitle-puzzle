@@ -20,7 +20,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-REPO = "ERun-3/subtitle-puzzle"
+REPO = "ERunnn/subtitle-puzzle"
 BUILD_ARGS = [
     "--onefile", "--windowed", "--name", "台词匠",
     "--icon", "subtitle_puzzle/icon.ico",

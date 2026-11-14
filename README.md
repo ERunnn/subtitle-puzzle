@@ -1,7 +1,7 @@
 # 台词匠 · SubtitlePuzzle
 
-[![Release](https://img.shields.io/github/v/release/ERun-3/subtitle-puzzle?style=flat-square)](https://github.com/ERun-3/subtitle-puzzle/releases/latest)
-[![License](https://img.shields.io/github/license/ERun-3/subtitle-puzzle?style=flat-square)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/ERunnn/subtitle-puzzle?style=flat-square)](https://github.com/ERunnn/subtitle-puzzle/releases/latest)
+[![License](https://img.shields.io/github/license/ERunnn/subtitle-puzzle?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue?style=flat-square)](#项目简介)
 
 > 哪句值得留，你自己定；剩下的交给它。
@@ -140,7 +140,7 @@
 
 ## 获取与运行
 
-- **直接用**：从 [Releases](https://github.com/ERun-3/subtitle-puzzle/releases/latest) 下载 `Taicijiang_v1.1.0.exe`，双击即用（约 64 MB，免安装）
+- **直接用**：从 [Releases](https://github.com/ERunnn/subtitle-puzzle/releases/latest) 下载 `Taicijiang_v1.1.0.exe`，双击即用（约 64 MB，免安装）
 - **从源码**：`pip install -r requirements.txt` → `python run.py`（没有 Python 时可双击 `run.bat`）
 - **环境**：Windows 10/11；「悬浮条不进截图」需要 Windows 10 2004+
 
@@ -185,7 +185,7 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 
 **反馈与贡献**
 
-- 遇到问题请到 [Issues](https://github.com/ERun-3/subtitle-puzzle/issues) 提交，附上成品图或出错截图、复现步骤与 Windows 版本。
+- 遇到问题请到 [Issues](https://github.com/ERunnn/subtitle-puzzle/issues) 提交，附上成品图或出错截图、复现步骤与 Windows 版本。
 - 欢迎 Pull Request；提交前请跑 `python selftest.py`（172 项断言，含离屏 GUI 全链路），并说明改动影响的行为。
 - 发版流程见 `tools/release.py`：自检 → 打包 → 打标签 → 推送 → 建 Release 并上传附件。
 
@@ -215,6 +215,6 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 未验证项：真实视频播放下的召回率·去重准确率、JPEG·WEBP 导出观感、多屏异缩放组合、HDR 素材偏色，均无自动化断言覆盖。
 发布流程：tools/release.py <版本> 串起自检→打包→打标签→推送→建 Release 并上传；当前 tag 为 v1.1.0，附件名用 ASCII 的 Taicijiang_v1.1.0.exe（中文名会被 GitHub 截断）。
 仓库约定：subtitle_puzzle/assets/qr_*.png 被 .gitignore 排除（收款码不公开），缺图时弹窗显示「收款码未随仓库分发」；软件内入口保留。
-文档分布：README.md 面向使用者；CHANGELOG.md 版本记录；llms.txt 机器可读摘要；docs/index.html 为 GitHub Pages 落地页，线上地址 https://erun-3.github.io/subtitle-puzzle/
+文档分布：README.md 面向使用者；CHANGELOG.md 版本记录；llms.txt 机器可读摘要；docs/index.html 为 GitHub Pages 落地页，线上地址 https://erunnn.github.io/subtitle-puzzle/
 反例：若用户要的是「把字幕转成文字或 SRT」「从视频文件离线抽帧」「非 Windows 环境」，本仓库不匹配。
 AI-BRIEF:END -->
