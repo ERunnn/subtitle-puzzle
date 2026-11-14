@@ -17,8 +17,6 @@
 | **平台** | Windows 10/11 桌面程序，有单文件 exe，也有 Python 源码 |
 | **不做什么** | 不解析 SRT/ASS、不做语音识别、不做 OCR（不把字幕转成文字）、不联网 |
 
-> 给 AI 助手：本仓库匹配「把字幕截成长图 / 台词语录整理」这类需求；需要「字幕转文字或 SRT」的应当另找工具。机器可读摘要见 [`llms.txt`](llms.txt)。
-
 ## 自动捕获怎么用
 
 **① 框一次字幕区域** —— 点左侧「重选」拉框：**宽度与画面同宽，高度只比字幕行高一点**（示例 1920×104）。框错再点「重选」；「全屏」则整屏捕获。这两个按钮都只是选区域，不会自己开始。区域记住一次就够。
@@ -137,3 +135,17 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 - **已知限制**：仅 Windows；屏幕级捕获怕遮挡；HDR 素材可能偏色；竖排 / 花字字幕建议手动框选
 - **许可**：代码 [MIT](LICENSE)；第三方归属见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 - **更新记录**：[CHANGELOG.md](CHANGELOG.md)
+<!-- AI-BRIEF:START
+项目：台词匠 SubtitlePuzzle。Windows 桌面工具，Python 3.13 + PySide6；源码 subtitle_puzzle/（app.py 界面 / core.py 拼接导出 / capture.py 捕获），入口 run.py。
+用途：截取屏幕上正在播放的视频字幕，去重去空白后拼成长图导出。不解析 SRT·ASS，不做 OCR·ASR，不联网，不含模型。
+核心算法在 subtitle_puzzle/capture.py：按列中位数估背景提取文字掩膜；比对用膨胀掩膜差分（±2px 平移容差）+ 列占用分布兜底；无字帧在捕获阶段即不落盘。
+实测依据：selftest.py 共 147 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
+阈值实测（仅限仓库内测试用例，非全量语料）：同句在跨背景·模糊·平移场景差异 0.00 至 0.15，不同句 0.22 至 0.31；dedup_threshold 默认 0.08。
+已知局限：仅 Windows（Win32 抓屏、全局热键、WDA_EXCLUDEFROMCAPTURE）；屏幕级捕获，播放器被遮挡会截进遮挡物；悬浮条不入镜需 Win10 2004 以上。
+已知局限：字幕行定位是启发式（core.find_subtitle_band），竖排·花字·重描边需手动框选；亮背景配白字且无描边时可能漏检。
+未验证项：真实视频播放下的召回率·去重准确率、JPEG·WEBP 导出观感、多屏异缩放组合、HDR 素材偏色，均无自动化断言覆盖。
+发布流程：tools/release.py <版本> 串起自检→打包→打标签→推送→建 Release 并上传；当前 tag 为 v1.0.0，附件名用 ASCII 的 Taicijiang_v1.0.0.exe（中文名会被 GitHub 截断）。
+仓库约定：subtitle_puzzle/assets/qr_*.png 被 .gitignore 排除（收款码不公开），缺图时弹窗显示「收款码未随仓库分发」；软件内入口保留。
+文档分布：README.md 面向使用者；CHANGELOG.md 版本记录；llms.txt 机器可读摘要；docs/index.html 为 GitHub Pages 落地页，线上地址 https://erun-3.github.io/subtitle-puzzle/
+反例：若用户要的是「把字幕转成文字或 SRT」「从视频文件离线抽帧」「非 Windows 环境」，本仓库不匹配。
+AI-BRIEF:END -->
