@@ -51,16 +51,22 @@
 
 ## 三种拼接模式
 
-同一批 5 张截图、同一个框选（1920×104）的成品，全分辨率未缩放，点开看原图。
+同一批 5 张截图、同一个框选（1920×104）的成品，均为全分辨率未缩放，点击图片看原图。
 
-**① 纯台词**（1920×520）—— 最紧凑，只留字幕
-<a href="docs/demo/mode-text.png"><img src="docs/demo/mode-text.png" alt="纯台词模式成品"></a>
-
-**② 首图保留画面**（1920×1231，默认）—— 首图整帧 + 其后台词
-<a href="docs/demo/mode-first.png"><img src="docs/demo/mode-first.png" width="620" alt="首图保留画面模式成品"></a>
-
-**③ 每张都保留画面**（1920×3935）—— 一句一帧，成品最长
-<a href="docs/demo/mode-all.png"><img src="docs/demo/mode-all.png" width="330" alt="每张都保留画面模式成品"></a>
+<table>
+<tr>
+<td width="58%"><a href="docs/demo/mode-text.png"><img src="docs/demo/mode-text.png" width="430" alt="纯台词模式成品"></a></td>
+<td valign="top"><b>① 纯台词</b><br>只留字幕，最紧凑<br><sub>1920 × 520</sub></td>
+</tr>
+<tr>
+<td><a href="docs/demo/mode-first.png"><img src="docs/demo/mode-first.png" width="430" alt="首图保留画面模式成品"></a></td>
+<td valign="top"><b>② 首图保留画面（默认）</b><br>首图保留整幅画面与它自己的字幕，后面的按字幕条接上<br><sub>1920 × 1231</sub></td>
+</tr>
+<tr>
+<td><a href="docs/demo/mode-all.png"><img src="docs/demo/mode-all.png" width="430" alt="每张都保留画面模式成品"></a></td>
+<td valign="top"><b>③ 每张都保留画面</b><br>一句一帧依次叠放，成品最长<br><sub>1920 × 3935</sub></td>
+</tr>
+</table>
 
 ## 功能一览
 
