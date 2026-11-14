@@ -31,16 +31,13 @@
 ① 框选区域 → ② 开始捕获 → ③ 播完按 F8 → ④ 自动去重导入 → ⑤ 导出
 ```
 
-<table>
-<tr>
-<td width="50%"><img src="docs/screenshots/04-capture-panel.png" alt="高级 → 自动捕获 参数面板"></td>
-<td width="50%"><img src="docs/screenshots/05-capture-bar.png" alt="捕获中的悬浮状态条"></td>
-</tr>
-<tr>
-<td><sub>参数在「高级 → 自动捕获」</sub></td>
-<td><sub>悬浮条实时计数，点它也能停</sub></td>
-</tr>
-</table>
+**参数面板**（「高级 → 自动捕获」）
+
+<img src="docs/screenshots/04-capture-panel.png" alt="高级 → 自动捕获 参数面板">
+
+**捕获中的悬浮条**（实时计数，点它也能停）
+
+<img src="docs/screenshots/05-capture-bar.png" alt="捕获中的悬浮状态条">
 
 **容易踩的四个点**
 
@@ -51,22 +48,19 @@
 
 ## 三种拼接模式
 
-同一批 5 张截图、同一个框选（1920×104）的成品，均为全分辨率未缩放，点击图片看原图。
+同一批 5 张截图、同一个框选（1920×104）的成品，均为全分辨率未缩放，点图片看原图。
 
-<table>
-<tr>
-<td width="58%"><a href="docs/demo/mode-text.png"><img src="docs/demo/mode-text.png" width="430" alt="纯台词模式成品"></a></td>
-<td valign="top"><b>① 纯台词</b><br>只留字幕，最紧凑<br><sub>1920 × 520</sub></td>
-</tr>
-<tr>
-<td><a href="docs/demo/mode-first.png"><img src="docs/demo/mode-first.png" width="430" alt="首图保留画面模式成品"></a></td>
-<td valign="top"><b>② 首图保留画面（默认）</b><br>首图保留整幅画面与它自己的字幕，后面的按字幕条接上<br><sub>1920 × 1231</sub></td>
-</tr>
-<tr>
-<td><a href="docs/demo/mode-all.png"><img src="docs/demo/mode-all.png" width="430" alt="每张都保留画面模式成品"></a></td>
-<td valign="top"><b>③ 每张都保留画面</b><br>一句一帧依次叠放，成品最长<br><sub>1920 × 3935</sub></td>
-</tr>
-</table>
+**① 纯台词** · 1920×520 —— 只留字幕，最紧凑
+
+<a href="docs/demo/mode-text.png"><img src="docs/demo/mode-text.png" alt="纯台词模式成品"></a>
+
+**② 首图保留画面（默认）** · 1920×1231 —— 首图保留整幅画面与它自己的字幕，后面的按字幕条接上
+
+<a href="docs/demo/mode-first.png"><img src="docs/demo/mode-first.png" alt="首图保留画面模式成品"></a>
+
+**③ 每张都保留画面** · 1920×3935 —— 一句一帧依次叠放，成品最长
+
+<a href="docs/demo/mode-all.png"><img src="docs/demo/mode-all.png" alt="每张都保留画面模式成品"></a>
 
 ## 功能一览
 
