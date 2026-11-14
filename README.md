@@ -2,7 +2,7 @@
 
 [![Release](https://img.shields.io/github/v/release/ERun-3/subtitle-puzzle?style=flat-square)](https://github.com/ERun-3/subtitle-puzzle/releases/latest)
 [![License](https://img.shields.io/github/license/ERun-3/subtitle-puzzle?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue?style=flat-square)](#这是什么)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue?style=flat-square)](#项目简介)
 
 > 哪句值得留，你自己定；剩下的交给它。
 
@@ -25,20 +25,20 @@
 
 ## 目录
 
-- [这是什么](#这是什么)
+- [项目简介](#项目简介)
 - [自动捕获怎么用](#自动捕获怎么用)
 - [输出比例](#输出比例)
-  - [怎么用](#怎么用)
+  - [使用方法](#使用方法)
 - [功能一览](#功能一览)
 - [参数速查](#参数速查)
 - [获取与运行](#获取与运行)
 - [常见问题](#常见问题)
-- [其它](#其它)
 - [贡献与致谢](#贡献与致谢)
+- [附录](#附录)
 
 ---
 
-## 这是什么
+## 项目简介
 
 | | |
 |---|---|
@@ -101,13 +101,13 @@
 </tr>
 </table>
 
-### 怎么用
+### 使用方法
 
 「输出尺寸 → 输出方式 → 指定比例（扩展取景）」，下面一行纯比例预设 `3:4` `9:16` `1:1` `4:3` `16:9`，点一下即切换，比例框也能手填。旁边的**方向**：自动 / 横屏 / 竖屏 —— 选横屏会把 `3:4` 当 `4:3` 用，选竖屏反过来。
 
 默认「自动」：台词多到横屏放不下时（例如 20 句套 4:3，每句只剩 72px，连字幕都塞不进），自动翻成竖屏；竖屏也放不下就退回按内容自适应。强制横屏时不自动翻，直接按内容出图。
 
-**字幕位置**：基础里只有「居中 / 偏下」两个选项，默认「偏下」；高级的「字幕微调」给 -150 ~ +150 px 的像素级偏移。字幕本来就在原片底部（这批素材上方 948px、下方仅 28px），所以默认把取景窗口下沿贴住原片底边，**缺的高度全部从上方多取真实画面** —— 上面五种比例都不产生背景黑边。切到「居中」会把字幕推到小块中间，代价是条带下方需要补一段背景色。
+**字幕位置**：基础里只有「居中 / 偏下」两个选项，默认「偏下」；高级的「字幕微调」给 -150 ~ +150 px 的像素级偏移。字幕本来就在原片底部（这批素材上方 948px、下方仅 28px），所以默认把取景窗口下沿贴住原片底边，**缺的高度全部从上方多取真实画面** —— 上面五种比例都不产生背景黑边。切到「居中」会把字幕推到小块中间，代价是条带下方需要补一段背景色。高级里「背景填充」默认「内容不足时补模糊」：**真实画面少于所选比例所需高度时**，用原图的模糊压暗版本补齐，而不是纯黑；选「只用纯色背景」可关闭。零背景场景（默认「偏下」）完全不受影响，透明导出也不会被模糊底覆盖。
 
 预览区实时显示「N 句 · 实际比例 · 补边占比」。想少带画面时，另选「指定比例（补画布）」：内容原样居中、四周补背景。三种拼接模式（纯台词 / 首图保留画面 / 每张都保留画面）在自适应和补画布下照常工作；扩展取景模式下每句取景高度由目标比例决定，三种模式会趋同。
 
@@ -132,6 +132,7 @@
 | 捕获敏感度 | 字幕变化阈值，框选后自动估一个值，偏小更敏感 |
 | 采样间隔 / 最小截图间隔 | 检测频率 220 ms；两次截图至少隔 700 ms |
 | 去重阈值 | 越大越严格；判定用「掩膜差异 + 列占用分布」双指标 |
+| 背景填充 | 内容撑不满比例时补什么 | 内容不足时补模糊（默认） | 想要纯黑边 → 只用纯色背景 |
 
 ## 获取与运行
 
@@ -176,20 +177,12 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 截太多：调大「捕获敏感度」和「最小截图间隔」；漏句：调小「采样间隔」。
 </details>
 
-## 其它
-
-- **自检**：`python selftest.py`（167 项断言）；打包程序 `台词匠.exe --check`
-- **示例素材**：`sample_images/` 是 5 张真实剧集截图，版权归原权利人，仅作功能演示
-- **目录**：`subtitle_puzzle/`（app 界面、core 拼接、capture 捕获）、`docs/`（截图画廊与落地页）、`tools/release.py`
-- **已知限制**：仅 Windows；屏幕级捕获怕遮挡；HDR 素材可能偏色；竖排 / 花字字幕建议手动框选
-- **许可**：代码 [MIT](LICENSE)；第三方归属见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
-- **更新记录**：[CHANGELOG.md](CHANGELOG.md)
 ## 贡献与致谢
 
 **反馈与贡献**
 
 - 遇到问题请到 [Issues](https://github.com/ERun-3/subtitle-puzzle/issues) 提交，附上成品图或出错截图、复现步骤与 Windows 版本。
-- 欢迎 Pull Request；提交前请跑 `python selftest.py`（167 项断言，含离屏 GUI 全链路），并说明改动影响的行为。
+- 欢迎 Pull Request；提交前请跑 `python selftest.py`（172 项断言，含离屏 GUI 全链路），并说明改动影响的行为。
 - 发版流程见 `tools/release.py`：自检 → 打包 → 打标签 → 推送 → 建 Release 并上传附件。
 
 **致谢**
@@ -199,11 +192,19 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 - 交互设计参考 [Vibo Player](https://github.com/stevenspage/video_screenshots)（MIT）的 8 控制点裁剪与实时预览，未复制其代码。
 - 本项目代码采用 [MIT License](LICENSE)。
 
+## 附录
+
+- **自检**：`python selftest.py`（172 项断言）；打包程序 `台词匠.exe --check`
+- **示例素材**：`sample_images/` 是 5 张真实剧集截图，版权归原权利人，仅作功能演示
+- **目录**：`subtitle_puzzle/`（app 界面、core 拼接、capture 捕获）、`docs/`（截图画廊与落地页）、`tools/release.py`
+- **已知限制**：仅 Windows；屏幕级捕获怕遮挡；HDR 素材可能偏色；竖排 / 花字字幕建议手动框选
+- **许可**：代码 [MIT](LICENSE)；第三方归属见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+- **更新记录**：[CHANGELOG.md](CHANGELOG.md)
 <!-- AI-BRIEF:START
 项目：台词匠 SubtitlePuzzle。Windows 桌面工具，Python 3.13 + PySide6；源码 subtitle_puzzle/（app.py 界面 / core.py 拼接导出 / capture.py 捕获），入口 run.py。
 用途：截取屏幕上正在播放的视频字幕，去重去空白后拼成长图导出。不解析 SRT·ASS，不做 OCR·ASR，不联网，不含模型。
 核心算法在 subtitle_puzzle/capture.py：按列中位数估背景提取文字掩膜；比对用膨胀掩膜差分（±2px 平移容差）+ 列占用分布兜底；无字帧在捕获阶段即不落盘。
-实测依据：selftest.py 共 167 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
+实测依据：selftest.py 共 172 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
 阈值实测（仅限仓库内测试用例，非全量语料）：同句在跨背景·模糊·平移场景差异 0.00 至 0.15，不同句 0.22 至 0.31；dedup_threshold 默认 0.08。
 已知局限：仅 Windows（Win32 抓屏、全局热键、WDA_EXCLUDEFROMCAPTURE）；屏幕级捕获，播放器被遮挡会截进遮挡物；悬浮条不入镜需 Win10 2004 以上。
 已知局限：字幕行定位是启发式（core.find_subtitle_band），竖排·花字·重描边需手动框选；亮背景配白字且无描边时可能漏检。

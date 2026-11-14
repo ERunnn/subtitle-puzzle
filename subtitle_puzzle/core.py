@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Sequence
 
-from PIL import Image, ImageOps
+from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 
 SUPPORTED_EXT = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff"}
 PREVIEW_MAX_EDGE = 1400  # 项目统一的预览图最长边
@@ -248,6 +248,7 @@ class LayoutParams:
     orientation: str = "auto"        # landscape | portrait | auto（仅 expand 模式）
     subtitle_pos: str = "bottom"     # center | bottom（基础：居中 / 偏下）
     subtitle_offset: int = 0         # 高级微调 px，正值更靠下（仅 expand 模式）
+    bg_style: str = "blur"           # blur | solid：补背景时用模糊画面还是纯色
     items_per_page: int = 0          # 0 = 拼成一张；>0 = 每页张数，超出分页导出
     resample: str = "LANCZOS"           # NEAREST | BILINEAR | BICUBIC | LANCZOS
 
@@ -477,6 +478,14 @@ def _expand_plan(source_w: int, n: int, band_h: float,
     return max(1, round(usable / n)), (rw, rh), note
 
 
+def _blur_backdrop(source: Image.Image, size: tuple[int, int]) -> Image.Image:
+    """把原图拉伸铺满画布、高斯模糊并压暗，作为补背景用的底图。"""
+    w, h = size
+    im = source.convert("RGB").resize((w, h), Image.Resampling.BILINEAR)
+    im = im.filter(ImageFilter.GaussianBlur(radius=max(6, h // 30)))
+    return ImageEnhance.Brightness(im).enhance(0.45).convert("RGBA")
+
+
 def _expand_strip(source: Image.Image, rect: CropRect, k: float,
                   target_h: int, bg: tuple[int, int, int, int],
                   params: LayoutParams) -> Image.Image:
@@ -500,8 +509,13 @@ def _expand_strip(source: Image.Image, rect: CropRect, k: float,
         y0 = sh - target_h - params.subtitle_offset
     y1 = y0 + target_h
     c0, c1 = max(0, y0), min(sh, y1)
-    layer = Image.new("RGBA", (sw, target_h), bg)
-    if c1 > c0:
+    visible = max(0, c1 - c0)
+    # 只有确实要补背景、且不是透明导出时才用模糊底；零背景场景完全不受影响
+    if params.bg_style == "blur" and not params.transparent and visible < target_h:
+        layer = _blur_backdrop(source, (sw, target_h))
+    else:
+        layer = Image.new("RGBA", (sw, target_h), bg)
+    if visible:
         strip = source.crop((0, c0, sw, c1)).convert("RGBA")
         layer.alpha_composite(strip, (0, c0 - y0))
     return layer

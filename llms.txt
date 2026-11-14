@@ -33,7 +33,7 @@
 - 图形程序：Windows 单文件 exe（Release 页下载，双击即用，无需 Python）
 - 源码运行：`pip install -r requirements.txt` 然后 `python run.py`
 - 环境：Windows 10/11；「排除截屏」需 Windows 10 2004+
-- 自检：`python selftest.py`（167 项断言）；打包程序 `台词匠.exe --check`
+- 自检：`python selftest.py`（172 项断言）；打包程序 `台词匠.exe --check`
 
 ## 关键词
 

@@ -151,6 +151,32 @@ def test_core(paths: list[Path], out: Path):
     check(ImageChops.difference(r_center.image.convert("RGB"),
                                 r_off.image.convert("RGB")).getbbox() is not None,
           "高级像素微调能改变字幕位置")
+    from subtitle_puzzle.core import _expand_strip
+    fake = Image.new("RGB", (100, 50), (30, 60, 90))
+    ImageDraw.Draw(fake).rectangle((10, 40, 90, 48), fill=(240, 240, 240))
+    fakerect = CropRect(0, 40, 100, 8)
+    bgpx = (0, 0, 0, 255)
+    kw = dict(source=fake, rect=fakerect, k=1.0, bg=bgpx)
+    # target_h 大于原图能给的高度 -> 居中时必然补背景
+    a = _expand_strip(target_h=40, params=LayoutParams(
+        subtitle_pos="center", bg_style="blur"), **kw)
+    b = _expand_strip(target_h=40, params=LayoutParams(
+        subtitle_pos="center", bg_style="solid"), **kw)
+    check(ImageChops.difference(a.convert("RGB"), b.convert("RGB")).getbbox() is not None,
+          "内容不足所选比例时，模糊背景与纯色背景产出不同")
+    # 贴底取景能取满 -> 零背景，开关不应改变任何像素
+    c = _expand_strip(target_h=20, params=LayoutParams(
+        subtitle_pos="bottom", bg_style="blur"), **kw)
+    d = _expand_strip(target_h=20, params=LayoutParams(
+        subtitle_pos="bottom", bg_style="solid"), **kw)
+    check(ImageChops.difference(c.convert("RGB"), d.convert("RGB")).getbbox() is None,
+          "零背景场景下模糊开关不改变输出（逻辑无冲突）")
+    check(a.getpixel((50, 39))[3] == 255, "模糊底为不透明画面")
+    e = _expand_strip(source=fake, rect=fakerect, k=1.0, bg=(0, 0, 0, 0),
+                      target_h=40, params=LayoutParams(
+                          subtitle_pos="center", bg_style="blur", transparent=True))
+    check(e.getpixel((50, 39))[3] == 0,
+          "透明导出时补背景处保持透明，不会被模糊底覆盖")
 
     r5 = compose(items, rect, LayoutParams(output_mode="size", output_width=800,
                                            output_height=1200), scale=s)
@@ -522,6 +548,9 @@ def test_gui(paths: list[Path], out: Path):
     check(w.sp_hero.value() == 100, "首图保留画面默认 100% 整幅画面")
     check(w.sp_suboff.minimum() < 0 < w.sp_suboff.maximum(),
           "高级「字幕微调」可正负调节")
+    check([w.cmb_bgstyle.itemData(i) for i in range(w.cmb_bgstyle.count())]
+          == ["blur", "solid"] and w.cmb_bgstyle.currentData() == "blur",
+          "高级「背景填充」可选，默认内容不足时补模糊")
     next(b for b in ratio_btns if b.text() == "9:16").click()
     check(w.cmb_out.currentData() == "expand" and
           (w.sp_rw.value(), w.sp_rh.value()) == (9, 16) and

@@ -904,6 +904,11 @@ A：在「输出尺寸 → 输出方式」选「指定比例（扩展取景）�
 「字幕位置」默认「偏下」：取景下沿贴住原片底边，缺的高度从上方多取画面，不产生黑边；
 切「居中」会把字幕挪到每格中间，代价是下方补一段背景色。高级里「字幕微调」还能上下挪 ±150px。</p>
 
+<p><b>Q：横图硬改竖屏，多出来的地方能不要纯黑吗？</b><br>
+A：高级里「背景填充」默认「内容不足时补模糊」：真实画面少于所选比例所需高度时，
+用原图的模糊压暗版本补齐，而不是纯黑。选「只用纯色背景」可关闭。
+默认「偏下」本来就不产生背景，「透明背景」也不会被模糊底盖住。</p>
+
 <p><b>Q：导出到哪？会动我的原图吗？</b><br>
 A：原图只读，不会被改。输出默认在工程目录的 output 里，可在「导出 → 导出目录」改；
 文件名支持 {date}、{n}、{page} 变量，导出前「将保存为」会显示实际文件名。
@@ -1909,6 +1914,14 @@ class MainWindow(QMainWindow):
         off_hint = QLabel("正值更靠下；在「字幕位置」基础上微调（仅扩展取景）")
         off_hint.setWordWrap(True)
         f2.addRow("", off_hint)
+        self.cmb_bgstyle = NoWheelComboBox()
+        for label, key in (("内容不足时补模糊（默认）", "blur"),
+                           ("只用纯色背景", "solid")):
+            self.cmb_bgstyle.addItem(label, key)
+        self.cmb_bgstyle.setToolTip(
+            "仅当真实画面少于所选比例所需高度时才补背景；零背景场景不受影响。\n"
+            "选「只用纯色背景」可关闭模糊补齐。")
+        f2.addRow("背景填充", self.cmb_bgstyle)
         lay.addWidget(g2)
 
         g3 = QGroupBox("输出细节")
@@ -2012,6 +2025,7 @@ class MainWindow(QMainWindow):
         self.cmb_orient.setCurrentIndex(max(0, self.cmb_orient.findData(p.orientation)))
         self.cmb_subpos.setCurrentIndex(max(0, self.cmb_subpos.findData(p.subtitle_pos)))
         self.sp_suboff.setValue(p.subtitle_offset)
+        self.cmb_bgstyle.setCurrentIndex(max(0, self.cmb_bgstyle.findData(p.bg_style)))
         self._update_swatch()
         self._syncing = False
 
@@ -2036,6 +2050,7 @@ class MainWindow(QMainWindow):
         p.orientation = self.cmb_orient.currentData() or "auto"
         p.subtitle_pos = self.cmb_subpos.currentData() or "center"
         p.subtitle_offset = self.sp_suboff.value()
+        p.bg_style = self.cmb_bgstyle.currentData() or "blur"
         p.items_per_page = self.sp_per_page.value()
         p.resample = self.cmb_resample.currentData()
 
@@ -2718,6 +2733,7 @@ class MainWindow(QMainWindow):
             "ratio_w": p.ratio_w, "ratio_h": p.ratio_h,
             "orientation": p.orientation,
             "subtitle_pos": p.subtitle_pos, "subtitle_offset": p.subtitle_offset,
+            "bg_style": p.bg_style,
             "items_per_page": p.items_per_page, "resample": p.resample,
             "padding": [p.padding.top, p.padding.bottom, p.padding.left, p.padding.right],
             "dir": self.ed_dir.text(), "name": self.ed_name.text(),
@@ -2759,6 +2775,9 @@ class MainWindow(QMainWindow):
         if idx >= 0:
             self.cmb_subpos.setCurrentIndex(idx)
         self.sp_suboff.setValue(int(snap.get("subtitle_offset", 0)))
+        idx = self.cmb_bgstyle.findData(snap.get("bg_style", "blur"))
+        if idx >= 0:
+            self.cmb_bgstyle.setCurrentIndex(idx)
         self.sp_per_page.setValue(int(snap.get("items_per_page", 0)))
         idx = self.cmb_resample.findData(snap.get("resample", "LANCZOS"))
         if idx >= 0:
