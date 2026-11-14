@@ -26,7 +26,7 @@
 ## 目录
 
 - [项目简介](#项目简介)
-- [功能](#功能)
+- [功能介绍](#功能介绍)
   - [自动捕获](#自动捕获)
   - [输出比例](#输出比例)
 - [参数速查](#参数速查)
@@ -45,7 +45,7 @@
 | **平台** | Windows 10/11 桌面程序，有单文件 exe，也有 Python 源码 |
 | **不做什么** | 不解析 SRT/ASS、不做语音识别、不做 OCR（不把字幕转成文字）、不联网 |
 
-## 功能
+## 功能介绍
 
 | | |
 |---|---|
@@ -105,7 +105,7 @@
 
 <table>
 <tr>
-<td width="60%" align="center" valign="top"><strong>16:9 · 横屏</strong><br><sub>1920×1080 · 每句取景 216px</sub><br><a href="docs/demo/ratio-16x9.jpg"><img src="docs/demo/ratio-16x9.jpg" width="420" alt="16:9 横屏成品"></a></td>
+<td width="60%" align="center" valign="top"><strong>16:9 · 横屏</strong><br><sub>1920×1080 · 每句取景 216px</sub><br><a href="docs/demo/ratio-16x9.jpg"><img src="docs/demo/ratio-16x9-card.jpg" width="420" alt="16:9 横屏成品"></a></td>
 <td width="40%" align="center" valign="top"><strong>9:16 · 竖屏</strong><br><sub>1920×3415 · 每句取景 683px</sub><br><a href="docs/demo/ratio-9x16.jpg"><img src="docs/demo/ratio-9x16.jpg" width="250" alt="9:16 竖屏成品"></a></td>
 </tr>
 </table>
