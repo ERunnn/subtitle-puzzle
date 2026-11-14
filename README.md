@@ -105,8 +105,8 @@
 
 <table>
 <tr>
-<td width="60%" align="center" valign="top"><strong>16:9 · 横屏</strong><br><sub>1920×1080 · 每句取景 216px</sub><br><a href="docs/demo/ratio-16x9.jpg"><img src="docs/demo/ratio-16x9-card.jpg" width="420" alt="16:9 横屏成品"></a></td>
-<td width="40%" align="center" valign="top"><strong>9:16 · 竖屏</strong><br><sub>1920×3415 · 每句取景 683px</sub><br><a href="docs/demo/ratio-9x16.jpg"><img src="docs/demo/ratio-9x16.jpg" width="250" alt="9:16 竖屏成品"></a></td>
+<td width="50%" align="center" valign="top"><strong>16:9 · 横屏</strong><br><sub>1920×1080 · 每句取景 216px</sub><br><a href="docs/demo/ratio-16x9.jpg"><img src="docs/demo/ratio-16x9-card.jpg" width="360" alt="16:9 横屏成品"></a></td>
+<td width="50%" align="center" valign="top"><strong>9:16 · 竖屏</strong><br><sub>1920×3415 · 每句取景 683px</sub><br><a href="docs/demo/ratio-9x16.jpg"><img src="docs/demo/ratio-9x16-card.jpg" width="360" alt="9:16 竖屏成品"></a></td>
 </tr>
 </table>
 
