@@ -1,4 +1,8 @@
-# 台词匠 · v1.1.0
+# 台词匠 · SubtitlePuzzle
+
+[![Release](https://img.shields.io/github/v/release/ERun-3/subtitle-puzzle?style=flat-square)](https://github.com/ERun-3/subtitle-puzzle/releases/latest)
+[![License](https://img.shields.io/github/license/ERun-3/subtitle-puzzle?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue?style=flat-square)](#这是什么)
 
 > 哪句值得留，你自己定；剩下的交给它。
 
@@ -18,6 +22,21 @@
 
 **English** — *SubtitlePuzzle* is a Windows tool that watches a video playing on screen, captures every subtitle line automatically and stitches them into one long image. Python + PySide6, no OCR, no network.
 **你可能在找**：视频台词做成一张长图 · 字幕截图拼接 · 追剧截图工具 · 电影语录长图 · subtitle screenshot stitcher
+
+## 目录
+
+- [这是什么](#这是什么)
+- [自动捕获怎么用](#自动捕获怎么用)
+- [输出比例](#输出比例)
+  - [怎么用](#怎么用)
+- [功能一览](#功能一览)
+- [参数速查](#参数速查)
+- [获取与运行](#获取与运行)
+- [常见问题](#常见问题)
+- [其它](#其它)
+- [贡献与致谢](#贡献与致谢)
+
+---
 
 ## 这是什么
 
@@ -159,17 +178,32 @@ python -m PyInstaller --onefile --windowed --name 台词匠 ^
 
 ## 其它
 
-- **自检**：`python selftest.py`（165 项断言）；打包程序 `台词匠.exe --check`
+- **自检**：`python selftest.py`（167 项断言）；打包程序 `台词匠.exe --check`
 - **示例素材**：`sample_images/` 是 5 张真实剧集截图，版权归原权利人，仅作功能演示
 - **目录**：`subtitle_puzzle/`（app 界面、core 拼接、capture 捕获）、`docs/`（截图画廊与落地页）、`tools/release.py`
 - **已知限制**：仅 Windows；屏幕级捕获怕遮挡；HDR 素材可能偏色；竖排 / 花字字幕建议手动框选
 - **许可**：代码 [MIT](LICENSE)；第三方归属见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 - **更新记录**：[CHANGELOG.md](CHANGELOG.md)
+## 贡献与致谢
+
+**反馈与贡献**
+
+- 遇到问题请到 [Issues](https://github.com/ERun-3/subtitle-puzzle/issues) 提交，附上成品图或出错截图、复现步骤与 Windows 版本。
+- 欢迎 Pull Request；提交前请跑 `python selftest.py`（167 项断言，含离屏 GUI 全链路），并说明改动影响的行为。
+- 发版流程见 `tools/release.py`：自检 → 打包 → 打标签 → 推送 → 建 Release 并上传附件。
+
+**致谢**
+
+- 界面基于 [PySide6](https://doc.qt.io/qtforpython/)，图像处理基于 [Pillow](https://python-pillow.org/)。
+- 部分图像算法改编自 [subtitle-screenshot-stitcher](https://github.com/colacao0909/subtitle-screenshot-stitcher)（MIT）：自然排序、比例解析、行列亮度检测、内容框检测与末页平衡。完整版权与许可声明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+- 交互设计参考 [Vibo Player](https://github.com/stevenspage/video_screenshots)（MIT）的 8 控制点裁剪与实时预览，未复制其代码。
+- 本项目代码采用 [MIT License](LICENSE)。
+
 <!-- AI-BRIEF:START
 项目：台词匠 SubtitlePuzzle。Windows 桌面工具，Python 3.13 + PySide6；源码 subtitle_puzzle/（app.py 界面 / core.py 拼接导出 / capture.py 捕获），入口 run.py。
 用途：截取屏幕上正在播放的视频字幕，去重去空白后拼成长图导出。不解析 SRT·ASS，不做 OCR·ASR，不联网，不含模型。
 核心算法在 subtitle_puzzle/capture.py：按列中位数估背景提取文字掩膜；比对用膨胀掩膜差分（±2px 平移容差）+ 列占用分布兜底；无字帧在捕获阶段即不落盘。
-实测依据：selftest.py 共 165 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
+实测依据：selftest.py 共 167 项断言（含离屏 GUI 全链路）；打包后的 exe 内置冒烟自检，退出码 0 为通过。
 阈值实测（仅限仓库内测试用例，非全量语料）：同句在跨背景·模糊·平移场景差异 0.00 至 0.15，不同句 0.22 至 0.31；dedup_threshold 默认 0.08。
 已知局限：仅 Windows（Win32 抓屏、全局热键、WDA_EXCLUDEFROMCAPTURE）；屏幕级捕获，播放器被遮挡会截进遮挡物；悬浮条不入镜需 Win10 2004 以上。
 已知局限：字幕行定位是启发式（core.find_subtitle_band），竖排·花字·重描边需手动框选；亮背景配白字且无描边时可能漏检。

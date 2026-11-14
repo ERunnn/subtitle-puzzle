@@ -472,6 +472,10 @@ def test_gui(paths: list[Path], out: Path):
           "常见问题不出现个人身份信息（作者段落已移除）")
     for key in ("快捷键", "开始捕获", "去重", "导出目录"):
         check(key in FAQ_HTML, f"常见问题覆盖：{key}")
+    tip = w._build_hotkey_tip()
+    check("min-width: 400px" in tip.styleSheet(), "捕获快捷键提示弹窗已加宽")
+    check(tip.informativeText().count("\n") >= 2, "快捷键提示文案分行，不再挤成一团")
+    tip.deleteLater()
     check(not hasattr(w, "msg"), "顶部提示条已移除（消息统一走底部状态栏）")
     check(w.stack.currentIndex() == 0 and w.start_page.stack.currentIndex() == 0,
           "无历史时首页显示大导入卡")

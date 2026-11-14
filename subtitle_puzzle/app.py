@@ -892,13 +892,21 @@ A：左栏可上下拖拽排序；右键有「上移 / 下移 / 移到最前 / �
 按住 Ctrl 或 Shift 多选后右键，整组一起移动或移除。</p>
 
 <p><b>Q：拼出来太大、太糊，或怪怪的？</b><br>
-A：「画面保留高度」决定每格留多少画面（75% 是常用值，0 就是纯字幕长条）；
-「输出方式」里可指定宽度 / 比例 / 固定尺寸；「图片间距 = 0」是无缝长图，
-加大一点就是常见的「截图卡片」。想每张都保留完整画面，就把「拼接模式」改成第三项。</p>
+A：「画面保留高度」决定每格留多少画面（默认 100% 整幅原图，0 就是纯字幕长条）；
+「输出方式」有按内容自适应 / 指定宽度 / 指定比例（扩展取景）/ 指定比例（补画布）/ 指定 W × H；
+「图片间距 = 0」是无缝长图，加大一点就是常见的「截图卡片」。
+想每张都保留完整画面，就把「拼接模式」改成第三项。</p>
+
+<p><b>Q：想直接出 4:3 或 9:16 发社媒，怎么弄？</b><br>
+A：在「输出尺寸 → 输出方式」选「指定比例（扩展取景）」，点下面的纯比例预设（3:4 / 9:16 / 1:1 / 4:3 / 16:9）即可；
+它是以字幕框为基准从原图多取画面把画布撑成目标比例，不是补黑边。「方向」可选自动 / 横屏 / 竖屏，
+台词多到横屏放不下时会自动转成竖屏。<br>
+「字幕位置」默认「偏下」：取景下沿贴住原片底边，缺的高度从上方多取画面，不产生黑边；
+切「居中」会把字幕挪到每格中间，代价是下方补一段背景色。高级里「字幕微调」还能上下挪 ±150px。</p>
 
 <p><b>Q：导出到哪？会动我的原图吗？</b><br>
 A：原图只读，不会被改。输出默认在工程目录的 output 里，可在「导出 → 导出目录」改；
-文件名支持 {date}、{n} 变量，导出前「将保存为」会显示实际文件名。
+文件名支持 {date}、{n}、{page} 变量，导出前「将保存为」会显示实际文件名。
 格式可选 PNG（无损）/ JPEG / WEBP。</p>
 
 <p><b>Q：截屏时右上角那条提示会被录进画面吗？</b><br>
@@ -3190,17 +3198,24 @@ class MainWindow(QMainWindow):
     def show_faq(self):
         self._build_faq_dialog().exec()
 
-    def _show_hotkey_tip(self):
+    def _build_hotkey_tip(self) -> QMessageBox:
         box = QMessageBox(self)
         box.setWindowTitle("捕获快捷键")
+        # 默认宽度会把说明挤成窄条，给文本区一个下限（与首次引导弹窗同一处理）
+        box.setStyleSheet("QLabel#qt_msgbox_label, QLabel#qt_msgbox_informativelabel"
+                          " { min-width: 400px; }")
         box.setIcon(QMessageBox.Icon.NoIcon)   # 单色界面里不要系统蓝图标
         box.setText(f"自动捕获快捷键：{self._hotkey_text}")
         box.setInformativeText(
-            "点「● 开始捕获」开始；捕获开始后，在任何窗口按它即可停止。\n"
+            "点「● 开始捕获」开始；\n"
+            "捕获开始后，在任何窗口按它即可停止。\n"
             "想换键：右侧「高级」→「自动捕获」→「捕获快捷键」。")
         box.setStandardButtons(QMessageBox.StandardButton.Ok)
         box.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
-        box.open()   # 非模态，不阻塞主界面
+        return box
+
+    def _show_hotkey_tip(self):
+        self._build_hotkey_tip().open()   # 非模态，不阻塞主界面
 
     def goto_start(self):
         self.items.clear()
