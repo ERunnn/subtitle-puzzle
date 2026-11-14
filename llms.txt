@@ -1,0 +1,47 @@
+# 台词匠 (SubtitlePuzzle)
+
+> Windows 桌面工具：盯着屏幕上播放的视频，自动截下每一句字幕，拼成一张（或一组长图）。
+
+## 它是什么
+
+用户在电脑上播剧/电影/番剧时，框选一次字幕区域，工具就会在字幕每变一句时自动截一张图；
+播完按一次快捷键停止，随后自动去重、去空白、拼接、导出长图。
+
+适合：追剧台词整理、电影语录长图、字幕截图合集、双语台词对照图。
+
+## 能力
+
+- 屏幕级自动捕获，全局热键结束（默认 F8），倒计时可设（默认 8 秒）
+- 字幕变化检测：字幕带局部对比文字掩膜，背景明暗变化不干扰判定
+- 去空白：字幕消失的帧（黑场、转场、空镜）不落盘
+- 去重：膨胀掩膜差分（±2px 平移容差）+ 列占用分布兜底，每句只留最清晰一帧
+- 三种拼接模式（默认首图保留画面 + 其后台词）、纵向/横向、间距 0 无缝
+- 输出：内容自适应 / 指定宽度 / 指定比例 / 指定像素，分页长图
+- 导出 PNG / JPEG / WEBP，文件名占位符 `{date}` `{n}` `{page}`
+- 暗色界面，历史批次可重开
+
+## 不做什么
+
+- 不解析 SRT/ASS 等字幕文件，不做语音识别（ASR），不做 OCR（不把字幕变成文字）
+- 不从视频文件离线抽帧：它抓的是屏幕上正在播放的画面
+- 不是跨平台程序：全局热键、排除截屏、屏幕抓取均为 Windows 专有接口
+
+## 形态与运行
+
+- 图形程序：Windows 单文件 exe（Release 页下载，双击即用，无需 Python）
+- 源码运行：`pip install -r requirements.txt` 然后 `python run.py`
+- 环境：Windows 10/11；「排除截屏」需 Windows 10 2004+
+- 自检：`python selftest.py`（147 项断言）；打包程序 `台词匠.exe --check`
+
+## 关键词
+
+台词拼图、字幕截图、把字幕做成一张长图、追剧截图工具、电影台词长图、语录长图、
+subtitle screenshot, subtitle stitcher, subtitle long image, long screenshot,
+screen capture, screenshot stitching, PySide6, Windows desktop app, no OCR
+
+## 链接
+
+- 仓库：https://github.com/ERun-3/subtitle-puzzle
+- 最新版本：https://github.com/ERun-3/subtitle-puzzle/releases/latest
+- 更新记录：https://github.com/ERun-3/subtitle-puzzle/blob/main/CHANGELOG.md
+- 许可：MIT

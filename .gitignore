@@ -1,0 +1,31 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# PyInstaller 产物
+build/
+dist/
+*.spec
+
+# 运行产物
+output/
+*.log
+
+# 编辑器 / 系统
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 本地工作区数据（不属于源码）
+.workbuddy/
+
+# 收款码不随仓库分发（本地自用，属彩蛋）
+subtitle_puzzle/assets/qr_*.png
+
+# filter-branch 临时目录
+.git-rewrite/

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>台词匠 · 把视频字幕截成一张长图（Windows）</title>
+<meta name="description" content="台词匠（SubtitlePuzzle）：Windows 桌面工具，自动截取视频里每一句台词/字幕，拼成一张长图。适合整理追剧台词、电影语录长图、双语字幕截图。Auto-capture subtitle lines and stitch into one long image.">
+<meta name="keywords" content="台词拼图,字幕截图,把字幕做成一张长图,追剧截图工具,电影台词长图,语录长图,subtitle screenshot,subtitle stitcher,long image,Windows,PySide6">
+<meta property="og:title" content="台词匠 · 把视频字幕截成一张长图">
+<meta property="og:description" content="自动截取视频里每一句台词，拼成一张长图。Windows 单文件，免费开源。">
+<meta property="og:image" content="screenshots/02-workspace.png">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --bg: #161616; --panel: #1e1e1e; --line: #2f2f2f;
+    --text: #e8e8e8; --dim: #9a9a9a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.75 "Microsoft YaHei UI", "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 56px 24px 80px; }
+  h1 { font-size: 32px; margin: 0 0 10px; letter-spacing: .5px; }
+  h1 span { color: var(--dim); font-weight: 400; font-size: 16px; }
+  .lead { color: var(--dim); margin: 0 0 28px; font-size: 16px; }
+  .en { color: #7e7e7e; font-size: 13.5px; }
+  .btns { display: flex; gap: 12px; flex-wrap: wrap; margin: 26px 0 40px; }
+  a.btn {
+    display: inline-block; text-decoration: none; padding: 10px 20px; border-radius: 8px;
+    border: 1px solid #4a4a4a; color: var(--text); background: #333; transition: .15s;
+  }
+  a.btn:hover { background: #3d3d3d; border-color: #5f5f5f; }
+  a.btn.ghost { background: transparent; color: var(--dim); }
+  a.btn.ghost:hover { color: var(--text); }
+  img.shot { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  h2 { font-size: 18px; margin: 44px 0 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--dim); font-weight: 400; width: 120px; }
+  ul { padding-left: 20px; }
+  li { margin: 5px 0; }
+  code { background: #262626; padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tags span { font-size: 12.5px; color: var(--dim); border: 1px solid var(--line); padding: 3px 10px; border-radius: 99px; }
+  figure { margin: 0 0 28px; }
+  figcaption { color: var(--dim); font-size: 13.5px; margin-bottom: 8px; }
+  footer { margin-top: 56px; color: #6d6d6d; font-size: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+  a { color: #cfcfcf; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>台词匠 <span>SubtitlePuzzle · v1.0.0</span></h1>
+  <p class="lead">让台词慢一点，让画面停一会 —— 把视频里一句句台词，自动截下来拼成一张长图。</p>
+  <p class="en">A Windows desktop tool that watches a video playing on screen, captures every subtitle
+  line automatically, and stitches them into one long image. Free &amp; open source, no OCR, no network.</p>
+
+  <div class="btns">
+    <a class="btn" href="https://github.com/ERun-3/subtitle-puzzle/releases/latest">下载 Windows 版（单文件 exe）</a>
+    <a class="btn ghost" href="https://github.com/ERun-3/subtitle-puzzle">查看源码 / GitHub</a>
+  </div>
+
+  <img class="shot" src="screenshots/02-workspace.png" alt="台词匠工作区：左侧素材列表，中间字幕框选与实时预览，右侧排版参数">
+
+  <h2>三种拼接模式（原图全分辨率成品）</h2>
+  <p class="en">Same 5 stills, same crop box (1920×104 — full width, a bit taller than the subtitle line) — three output modes.</p>
+
+  <figure>
+    <figcaption>① 纯台词 —— 最紧凑，只留字幕（1920×520）</figcaption>
+    <a href="demo/mode-text.png"><img class="shot" src="demo/mode-text.png" alt="纯台词模式成品"></a>
+  </figure>
+
+  <figure>
+    <figcaption>② 首图保留画面（默认）—— 首图整帧 + 其后台词（1920×1231）</figcaption>
+    <a href="demo/mode-first.png"><img class="shot" src="demo/mode-first.png" alt="首图保留画面模式成品"></a>
+  </figure>
+
+  <figure>
+    <figcaption>③ 每张都保留画面 —— 一句一帧依次叠放（1920×3935）</figcaption>
+    <a href="demo/mode-all.png"><img class="shot" src="demo/mode-all.png" style="max-width:60%;" alt="每张都保留画面模式成品"></a>
+  </figure>
+
+  <h2>它是怎么工作的</h2>
+  <table>
+    <tr><th>做什么</th><td>屏幕上播视频 → 字幕每变一句就自动截一张 → 拼成一张（或一组长图）</td></tr>
+    <tr><th>怎么用</th><td>框选一次字幕区域 → 点「开始捕获」→ 播完按 <code>F8</code> 停 → 导出</td></tr>
+    <tr><th>适合</th><td>追剧台词整理、电影语录长图、双语字幕截图合集、把喜欢的台词做成可收藏的图</td></tr>
+    <tr><th>平台</th><td>Windows 10 / 11（绿色单文件，双击即用；也可从源码运行）</td></tr>
+    <tr><th>不做什么</th><td>不解析 SRT/ASS、不做语音识别、不做 OCR（不把字幕变成文字）、不联网</td></tr>
+  </table>
+
+  <h2>关键能力</h2>
+  <ul>
+    <li><b>自动捕获</b>：按字幕变化截图，不用一边暂停一边手截</li>
+    <li><b>去空白</b>：字幕消失的帧（黑场、转场、空镜）直接不落盘</li>
+    <li><b>去重</b>：字幕行文字掩膜比对，同一句只留最清晰的一帧</li>
+    <li><b>排版</b>：默认首图保留画面 + 其后台词；画面保留高度可调，字幕永不被切</li>
+    <li><b>导出</b>：PNG / JPEG / WEBP，可分页长图、按宽度或比例输出</li>
+  </ul>
+
+  <h2>你可能在找</h2>
+  <div class="tags">
+    <span>台词拼图</span><span>字幕截图</span><span>字幕长图</span><span>追剧截图工具</span>
+    <span>电影台词长图</span><span>语录长图</span><span>双语字幕</span>
+    <span>subtitle screenshot</span><span>subtitle stitcher</span><span>long screenshot</span>
+    <span>Windows desktop app</span><span>PySide6</span>
+  </div>
+
+  <h2>获取</h2>
+  <ul>
+    <li>Windows 单文件：<a href="https://github.com/ERun-3/subtitle-puzzle/releases/latest">Releases</a>（约 64 MB，免安装）</li>
+    <li>源码运行：<code>pip install -r requirements.txt</code> → <code>python run.py</code></li>
+    <li>自检：<code>python selftest.py</code>（147 项断言）</li>
+  </ul>
+
+  <footer>
+    以 MIT 许可开源 · <a href="https://github.com/ERun-3/subtitle-puzzle">ERun-3/subtitle-puzzle</a>
+    · 第三方声明见 <a href="https://github.com/ERun-3/subtitle-puzzle/blob/main/THIRD_PARTY_NOTICES.md">THIRD_PARTY_NOTICES</a>
+  </footer>
+</div>
+</body>
+</html>
