@@ -6,7 +6,15 @@
 
 **看到喜欢的台词，按一次 F8，五分钟内出图** —— 不用找视频文件、不用记时间点、不用等 AI 跑完。
 
-![四句台词拼成的长图：也许不是今天 / 也许不是明天 / 也许不是下个月，但总有一天 / 我会成为冠军](docs/demo/case-01.jpg)
+下面三张都是用它拼出来的成品，点图片看原图。
+
+<table>
+<tr>
+<td width="33%" align="center" valign="top"><strong>四句台词，一气呵成</strong><br><sub>看到就存 · 只留字幕</sub><br><a href="docs/demo/case-01.jpg"><img src="docs/demo/showcase-01.jpg" width="280" alt="四句台词拼成的长图"></a></td>
+<td width="33%" align="center" valign="top"><strong>访谈里的五句</strong><br><sub>字与画面一起留下</sub><br><a href="docs/demo/case-02.jpg"><img src="docs/demo/showcase-02.jpg" width="280" alt="五句访谈台词拼成的长图"></a></td>
+<td width="33%" align="center" valign="top"><strong>一句一帧</strong><br><sub>每张都保留画面</sub><br><a href="docs/demo/mode-all.png"><img src="docs/demo/showcase-03.jpg" width="280" alt="每张都保留画面的长图"></a></td>
+</tr>
+</table>
 
 **English** — *SubtitlePuzzle* is a Windows tool that watches a video playing on screen, captures every subtitle line automatically and stitches them into one long image. Python + PySide6, no OCR, no network.
 **你可能在找**：视频台词做成一张长图 · 字幕截图拼接 · 追剧截图工具 · 电影语录长图 · subtitle screenshot stitcher
@@ -18,12 +26,6 @@
 | **做什么** | 屏幕上播视频 → 自动截下每一句字幕 → 拼成一张（或一组长图） |
 | **平台** | Windows 10/11 桌面程序，有单文件 exe，也有 Python 源码 |
 | **不做什么** | 不解析 SRT/ASS、不做语音识别、不做 OCR（不把字幕转成文字）、不联网 |
-
-## 成品
-
-另一组五句台词拼成的长图，点图片看原图。
-
-<a href="docs/demo/case-02.jpg"><img src="docs/demo/case-02.jpg" alt="五句台词拼成的长图成品"></a>
 
 ## 自动捕获怎么用
 
@@ -60,19 +62,21 @@
 
 ## 三种拼接模式
 
-同一批 5 张截图、同一个框选（1920×104）的成品，均为全分辨率未缩放，点图片看原图。
+同一批 5 张截图、同一个框选（1920×104）。三张都用「指定比例 3:4」重新导出，用来展示输出比例功能：内容原样保留，只补背景，不裁画面、不拉伸文字。点图片看原图。
 
-**① 纯台词** · 1920×520 —— 只留字幕，最紧凑
+<table>
+<tr>
+<td width="33%" align="center" valign="top"><strong>① 纯台词</strong><br><sub>1920×520 → 1920×2560 · 80% 补边</sub><br><a href="docs/demo/mode-text-3x4.jpg"><img src="docs/demo/mode-text-3x4.jpg" width="280" alt="纯台词模式 3:4 成品"></a></td>
+<td width="33%" align="center" valign="top"><strong>② 首图保留画面（默认）</strong><br><sub>1920×1231 → 1920×2560 · 52% 补边</sub><br><a href="docs/demo/mode-first-3x4.jpg"><img src="docs/demo/mode-first-3x4.jpg" width="280" alt="首图保留画面模式 3:4 成品"></a></td>
+<td width="33%" align="center" valign="top"><strong>③ 每张都保留画面</strong><br><sub>1920×4075 → 3056×4075 · 37% 补边</sub><br><a href="docs/demo/mode-all-3x4.jpg"><img src="docs/demo/mode-all-3x4.jpg" width="280" alt="每张都保留画面模式 3:4 成品"></a></td>
+</tr>
+</table>
 
-<a href="docs/demo/mode-text.png"><img src="docs/demo/mode-text.png" alt="纯台词模式成品"></a>
+### 输出比例
 
-**② 首图保留画面（默认）** · 1920×1231 —— 首图保留整幅画面与它自己的字幕，后面的按字幕条接上
+「输出尺寸 → 输出方式 → 指定比例（补画布）」下有一行纯比例预设：`3:4` `9:16` `1:1` `4:3` `16:9`，点一下即切换；旁边的比例框也能手填，输出方式还有「按内容自适应 / 指定宽度 / 指定 W × H」。
 
-<a href="docs/demo/mode-first.png"><img src="docs/demo/mode-first.png" alt="首图保留画面模式成品"></a>
-
-**③ 每张都保留画面** · 1920×3935 —— 一句一帧依次叠放，成品最长
-
-<a href="docs/demo/mode-all.png"><img src="docs/demo/mode-all.png" alt="每张都保留画面模式成品"></a>
+选中比例后，预览区实时显示「内容尺寸 → 输出尺寸 · 补边占比」。补边不是坏事，但占比太高就说明这个比例跟当前内容不匹配 —— 上面 ① 的 80% 正是在提示：纯台词只有 5 句时套 3:4 会留出大片空白，可以换成 `1:1`、多截几句，或改用「首图保留画面」。工具只把数字摆出来，怎么选还是你定。
 
 ## 功能一览
 
