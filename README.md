@@ -14,9 +14,9 @@
 
 <table>
 <tr>
-<td width="33%" align="center" valign="top"><strong>四句台词，一气呵成</strong><br><sub>看到就存 · 只留字幕</sub><br><a href="docs/demo/case-01.jpg"><img src="docs/demo/showcase-01.jpg" width="280" alt="四句台词拼成的长图"></a></td>
-<td width="33%" align="center" valign="top"><strong>访谈里的五句</strong><br><sub>字与画面一起留下</sub><br><a href="docs/demo/case-02.jpg"><img src="docs/demo/showcase-02.jpg" width="280" alt="五句访谈台词拼成的长图"></a></td>
-<td width="33%" align="center" valign="top"><strong>首图保留画面（默认）</strong><br><sub>第一帧留整幅画面</sub><br><a href="docs/demo/mode-first.png"><img src="docs/demo/showcase-03.jpg" width="280" alt="首图保留画面模式的长图"></a></td>
+<td width="33%" align="center" valign="top"><a href="docs/demo/case-01.jpg"><img src="docs/demo/showcase-01.jpg" width="280" alt="四句台词拼成的长图"></a></td>
+<td width="33%" align="center" valign="top"><a href="docs/demo/case-02.jpg"><img src="docs/demo/showcase-02.jpg" width="280" alt="五句访谈台词拼成的长图"></a></td>
+<td width="33%" align="center" valign="top"><a href="docs/demo/mode-first.png"><img src="docs/demo/showcase-03.jpg" width="280" alt="首图保留画面模式的长图"></a></td>
 </tr>
 </table>
 
